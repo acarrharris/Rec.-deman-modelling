@@ -19,7 +19,7 @@ sf_size
 
 
 # Now we want to adjust mean catch per trip by the expansion factor. 
-# Mean and variance are linked, so we will assume that in the prediction year under a new mean catch per trip, 
+# We will assume that in the prediction year under a new mean catch per trip, 
 # the variance relative to the mean remains as it was in the baseline year. 
 
 # From ?NegBinomial:
@@ -70,8 +70,9 @@ df <- coef(fit)[2]
 
 
 t_copula_nb <- mvdc(copula=tCopula(rho,dim=2,df=df),  margins = c("nbinom","nbinom"), 
-                    paramMargins=list(list(mu=sf_mu, size=sf_size),
+                    paramMargins=list(list(mu=sf_mu_new, size=sf_size_new),
                                       list(mu=bsb_mu, size=bsb_size)))
+
 
 sim_t_cop_nb <- rMvdc(30000, t_copula_nb )
 
