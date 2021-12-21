@@ -78,9 +78,8 @@ library(MASS)
 library(stats)
 # Set the wd to wherever all the code/data is 
 
-setwd("C:/Users/andrew.carr-harris/Dropbox/NMFS/fluke_mse/simulation_R_code/")
+#setwd("C:/Users/andrew.carr-harris/Dropbox/NMFS/fluke_mse/simulation_R_code/")
 #setwd("C:/Users/Lou/Dropbox/NMFS/fluke_mse/simulation_R_code/")
-
 
 # Start the clock!
 ptm <- proc.time()

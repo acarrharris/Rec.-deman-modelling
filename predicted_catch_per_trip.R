@@ -14,13 +14,39 @@ summary(nbfit_sf)
 sf_mu <- nbfit_sf$estimate['mu']
 sf_mu
 
-#Here, scale sf_mu by the scale factor 
-sf_mu=sf_mu*catch_expansion_factor_NO
-sf_mu
-
 sf_size <- nbfit_sf$estimate['size']
 sf_size
 
+
+# Now we want to adjust mean catch per trip by the expansion factor. 
+# Mean and variance are linked, so we will assume that in the prediction year under a new mean catch per trip, 
+# the variance relative to the mean remains as it was in the baseline year. 
+
+# From ?NegBinomial:
+# An alternative parametrization (often used in ecology) is by the mean mu (see above), 
+# and size, the dispersion parameter, where prob = size/(size+mu). The variance is mu + mu^2/size 
+# in this parametrization. 
+
+var_sf=sf_mu+(sf_mu^2)/sf_size
+cv_sf_base = sqrt(var_sf)/sf_mu
+cv_sf_base
+
+# New mean catch per trip
+sf_mu_new=sf_mu*catch_expansion_factor_NO
+
+#solve for new size parameter 
+sf_size_new=(sf_mu_new^2)/(((cv_sf_base*sf_mu_new)^2)-sf_mu_new)
+
+#new variance and CV
+var_sf_new=sf_mu_new+(sf_mu_new^2)/sf_size_new
+cv_sf_new = sqrt(var_sf_new)/sf_mu_new
+
+#Check that CV old and CV new are the same
+cv_sf_base
+cv_sf_new
+
+
+# Get the black sea bass parameters 
 nbfit_bsb <- fitdistr(bsb, "Negative Binomial")
 nbfit_bsb
 
