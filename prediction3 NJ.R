@@ -47,7 +47,7 @@ levels(periodz)
 for(p in levels(periodz)){
   directed_trips_p = subset(directed_trips, period == p)
   n_trips = mean(directed_trips_p$dtrip_2019)
-  n_draws = min(10000,n_trips*2.5 )
+  n_draws = min(1000,n_trips*2.5 )
   fluke_bag = mean(directed_trips_p$fluke_bag)
   fluke_min = mean(directed_trips_p$fluke_min)
   fluke_max = mean(directed_trips_p$fluke_max)
@@ -72,6 +72,7 @@ for(p in levels(periodz)){
     # random draw of fluke and bsb catch
     sf_catch_data = as.data.frame(sf_catch_data[sample(1:nrow(sf_catch_data), n_draws), ])
     sf_catch_data$tripid = 1:nrow(sf_catch_data)
+    sf_bsb_catch_data = sf_catch_data
     
     
     
@@ -182,22 +183,95 @@ for(p in levels(periodz)){
     trip_data[is.na(trip_data)] = 0
     trip_data$tot_sf_catch = trip_data$tot_keep+trip_data$tot_rel
     
+    #########################
+    ###  Black sea bass  ####
+    #########################
+    
+    
+    #draw sizes for black sea bass catch
+    bsb_catch_data =subset(sf_bsb_catch_data, select=c(tripid, tot_bsb_catch))
+    bsb_catch_data = bsb_catch_data[!duplicated(bsb_catch_data), ]
+    
+    #subset trips with zero bsb catch 
+    bsb_zero_catch = subset(bsb_catch_data, tot_bsb_catch == 0, select=c(tripid, tot_bsb_catch))
+    
+    
+    #remove trips with zero bsb catch, will add them on later
+    bsb_catch_data=bsb_catch_data[bsb_catch_data$tot_bsb_catch!=0, ]
+    rownames(bsb_catch_data) = NULL
+    
+    
+    #expand the bsb_catch_data so that each row represents a fish
+    row_inds = seq_len(nrow(bsb_catch_data))
+    bsb_catch_data[is.na(bsb_catch_data)] = 0
+    bsb_catch_data = bsb_catch_data[c(rep(row_inds, bsb_catch_data$tot_bsb_catch)), ]
+    rownames(bsb_catch_data) = NULL
+    bsb_catch_data$fishid = 1:nrow(bsb_catch_data)
+    
+    
+    
+    #Execute the following code if the seasonal period has a positive bag limit 
+    if(bsb_bag>0){
+      
+      bsb_catch_data1= as.data.frame(bsb_catch_data)  
+      bsb_catch_data1$uniform=runif(nrow(bsb_catch_data1))
+      bsb_catch_data1$keep = ifelse(bsb_catch_data1$uniform>=0.93, 1,0) 
+      bsb_catch_data1$release = ifelse(bsb_catch_data1$keep==0, 1,0) 
+      
+      bsb_catch_data1=subset(bsb_catch_data1, select=c(tripid, keep, release))
+      bsb_catch_data1 <-aggregate(bsb_catch_data1, by=list(bsb_catch_data$tripid),FUN=sum, na.rm=TRUE)
+      bsb_catch_data1 <-subset(bsb_catch_data1, select=c(Group.1, keep, release))
+      names(bsb_catch_data1)[names(bsb_catch_data1) == "Group.1"] = "tripid"
+      names(bsb_catch_data1)[names(bsb_catch_data1) == "keep"] = "tot_keep_bsb"
+      names(bsb_catch_data1)[names(bsb_catch_data1) == "release"] = "tot_rel_bsb"
+      
+    }
+    
+    if(bsb_bag==0){
+      
+      bsb_catch_data1= as.data.frame(bsb_catch_data)  
+      bsb_catch_data1$keep = 0
+      bsb_catch_data1$release = 1
+      
+      bsb_catch_data1=subset(bsb_catch_data1, select=c(tripid, keep, release))
+      bsb_catch_data1 <-aggregate(bsb_catch_data1, by=list(bsb_catch_data1$tripid),FUN=sum, na.rm=TRUE)
+      bsb_catch_data1 <-subset(bsb_catch_data1, select=c(Group.1, keep, release))
+      names(bsb_catch_data1)[names(bsb_catch_data1) == "Group.1"] = "tripid"
+      names(bsb_catch_data1)[names(bsb_catch_data1) == "keep"] = "tot_keep_bsb"
+      names(bsb_catch_data1)[names(bsb_catch_data1) == "release"] = "tot_rel_bsb"
+      
+    }
+    
+    
+    #add the zero catch trips 
+    bsb_catch_data1 = bind_rows(bsb_catch_data1, bsb_zero_catch)
+    bsb_catch_data1 = subset(bsb_catch_data1, select=-c(tot_bsb_catch))
+    
+    #quick sort and cleanup 
+    bsb_catch_data1 = bsb_catch_data1[order(bsb_catch_data1$tripid),]
+    rownames(bsb_catch_data1) <- NULL
+    
+    bsb_catch_data1[is.na(bsb_catch_data1)] = 0
+    
+    # merge the trip data (summer flounder catch, lengths, and cost) with the bsb data (numbers kept and released))
+    trip_data =  merge(trip_data,bsb_catch_data1,by="tripid")
+    trip_data[is.na(trip_data)] = 0
+    
+    
+    
     # merge catch information for other species. Assume per-trip catch outcomes for these species are the same as the calibration. 
     # This info is contained in the costs_new_all_state datasets
-    bsb_sc_wf_data=subset(costs_new_all_NJ, period ==p & catch_draw==i, select=c(tripid,tot_keep_scup_base, tot_rel_scup_base, 
-                                                                                 tot_keep_bsb_base, tot_rel_bsb_base,
+    sc_wf_data=subset(costs_new_all_NJ, period ==p & catch_draw==i, select=c(tripid,tot_keep_scup_base, tot_rel_scup_base,
                                                                                  tot_keep_wf_base, tot_rel_wf_base )) 
     
-    names(bsb_sc_wf_data)[names(bsb_sc_wf_data) == "tot_keep_bsb_base"] = "tot_keep_bsb"
-    names(bsb_sc_wf_data)[names(bsb_sc_wf_data) == "tot_rel_bsb_base"] = "tot_rel_bsb"
-    names(bsb_sc_wf_data)[names(bsb_sc_wf_data) == "tot_keep_scup_base"] = "tot_keep_scup"
-    names(bsb_sc_wf_data)[names(bsb_sc_wf_data) == "tot_rel_scup_base"] = "tot_rel_scup"
-    names(bsb_sc_wf_data)[names(bsb_sc_wf_data) == "tot_keep_wf_base"] = "tot_keep_wf"
-    names(bsb_sc_wf_data)[names(bsb_sc_wf_data) == "tot_rel_wf_base"] = "tot_rel_wf"
+    names(sc_wf_data)[names(sc_wf_data) == "tot_keep_scup_base"] = "tot_keep_scup"
+    names(sc_wf_data)[names(sc_wf_data) == "tot_rel_scup_base"] = "tot_rel_scup"
+    names(sc_wf_data)[names(sc_wf_data) == "tot_keep_wf_base"] = "tot_keep_wf"
+    names(sc_wf_data)[names(sc_wf_data) == "tot_rel_wf_base"] = "tot_rel_wf"
     
     
     # merge the trip data (summer flounder catch + lengths) with the other species data (numbers kept and released))
-    trip_data =  merge(trip_data,bsb_sc_wf_data,by="tripid")
+    trip_data =  merge(trip_data,sc_wf_data,by="tripid")
     trip_data[is.na(trip_data)] = 0        
     
     
