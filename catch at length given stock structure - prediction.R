@@ -43,7 +43,7 @@ sum(numbers_at_length$N_l)
 
 # Import and merge the selectivity data to this file 
 selectivity = data.frame(read_excel("rec_selectivity.xlsx"))
-selectivity <-subset(selectivity, select=c(l_in_bin, fitted_prob, region, q, E, observed_C_l))
+selectivity <-subset(selectivity, select=c(l_in_bin, region, q, E, C_l))
 numbers_at_length_new =  merge(selectivity,numbers_at_length,by="l_in_bin", all.x=TRUE, all.y=TRUE)
 
 numbers_at_length_new[is.na(numbers_at_length_new)] = 0
@@ -73,9 +73,9 @@ tot_cat_NJ_predicted=sum(numbers_at_length_NJ$C_l_new)
 tot_cat_SO_predicted=sum(numbers_at_length_SO$C_l_new)
 
 
-tot_cat_NO_base=sum(subset(selectivity, region == "NO")$observed_C_l)
-tot_cat_NJ_base=sum(subset(selectivity, region == "NJ")$observed_C_l)
-tot_cat_SO_base=sum(subset(selectivity, region == "SO")$observed_C_l)
+tot_cat_NO_base=sum(subset(selectivity, region == "NO")$C_l)
+tot_cat_NJ_base=sum(subset(selectivity, region == "NJ")$C_l)
+tot_cat_SO_base=sum(subset(selectivity, region == "SO")$C_l)
 
 tot_cat_base = tot_cat_NO_base+tot_cat_NJ_base+tot_cat_SO_base
 tot_cat_predicted = tot_cat_NO_predicted + tot_cat_NJ_predicted+tot_cat_SO_predicted
@@ -104,49 +104,30 @@ numbers_at_length_NO = numbers_at_length_NO[c(rep(row_inds, numbers_at_length_NO
 rownames(numbers_at_length_NO) = NULL
 
 
-fit = fitdistr(numbers_at_length_NO$l_in_bin, 'gamma')
-n = nrow(numbers_at_length_NO)
-shape=coef(fit)[1]
-rate=coef(fit)[2]
+# fit = fitdistr(numbers_at_length_NO$l_in_bin, 'gamma')
+# n = nrow(numbers_at_length_NO)
+# shape=coef(fit)[1]
+# rate=coef(fit)[2]
+# 
+# numbers_at_length_NO$gammafit = rgamma(n, shape=shape,  rate=rate)
+# numbers_at_length_NO$gammafit = round(numbers_at_length_NO$gammafit)
+# numbers_at_length_NO$nfish = 1
+# numbers_at_length_NO <-aggregate(numbers_at_length_NO, by=list(numbers_at_length_NO$gammafit),FUN=sum, na.rm=TRUE)
+# numbers_at_length_NO$region="NO"
+# 
+# names(numbers_at_length_NO)[names(numbers_at_length_NO) == "Group.1"] = "fitted_length"
+# numbers_at_length_NO <-subset(numbers_at_length_NO,  select=c(fitted_length, nfish))
+# sum_nfish= sum(numbers_at_length_NO$nfish)
 
-numbers_at_length_NO$gammafit = rgamma(n, shape=shape,  rate=rate)
-numbers_at_length_NO$gammafit = round(numbers_at_length_NO$gammafit)
 numbers_at_length_NO$nfish = 1
-numbers_at_length_NO <-aggregate(numbers_at_length_NO, by=list(numbers_at_length_NO$gammafit),FUN=sum, na.rm=TRUE)
-numbers_at_length_NO$region="NO"
-
+numbers_at_length_NO <-aggregate(numbers_at_length_NO$nfish, by=list(numbers_at_length_NO$l_in_bin),FUN=sum, na.rm=TRUE)
 names(numbers_at_length_NO)[names(numbers_at_length_NO) == "Group.1"] = "fitted_length"
-numbers_at_length_NO <-subset(numbers_at_length_NO,  select=c(fitted_length, nfish))
+names(numbers_at_length_NO)[names(numbers_at_length_NO) == "x"] = "nfish"
 sum_nfish= sum(numbers_at_length_NO$nfish)
 numbers_at_length_NO$fitted_prob = numbers_at_length_NO$nfish/sum_nfish
 numbers_at_length_NO$region = "NO"
 numbers_at_length_NO$year = "y2"
 
-
-
-# New York
-# row_inds = seq_len(nrow(numbers_at_length_NY))
-# numbers_at_length_NY = numbers_at_length_NY[c(rep(row_inds, numbers_at_length_NY$C_l_new)), ]
-# rownames(numbers_at_length_NO) = NULL
-# 
-# 
-# fit = fitdistr(numbers_at_length_NY$l_in_bin, 'gamma')
-# n = nrow(numbers_at_length_NY)
-# shape=coef(fit)[1]
-# rate=coef(fit)[2]
-# 
-# numbers_at_length_NY$gammafit = rgamma(n, shape=shape,  rate=rate)
-# numbers_at_length_NY$gammafit = round(numbers_at_length_NY$gammafit)
-# numbers_at_length_NY$nfish = 1
-# numbers_at_length_NY <-aggregate(numbers_at_length_NY, by=list(numbers_at_length_NY$gammafit),FUN=sum, na.rm=TRUE)
-# numbers_at_length_NY$region="NO"
-# 
-# names(numbers_at_length_NY)[names(numbers_at_length_NY) == "Group.1"] = "fitted_length"
-# numbers_at_length_NY <-subset(numbers_at_length_NY,  select=c(fitted_length, nfish))
-# sum_nfish= sum(numbers_at_length_NY$nfish)
-# numbers_at_length_NY$fitted_prob = numbers_at_length_NY$nfish/sum_nfish
-# numbers_at_length_NY$region = "NY"
-# numbers_at_length_NY$year = "y2"
 
 
 #New Jersey
@@ -155,24 +136,29 @@ numbers_at_length_NJ = numbers_at_length_NJ[c(rep(row_inds, numbers_at_length_NJ
 rownames(numbers_at_length_NJ) = NULL
 
 
-fit = fitdistr(numbers_at_length_NJ$l_in_bin, 'gamma')
-n = nrow(numbers_at_length_NJ)
-shape=coef(fit)[1]
-rate=coef(fit)[2]
+# fit = fitdistr(numbers_at_length_NJ$l_in_bin, 'gamma')
+# n = nrow(numbers_at_length_NJ)
+# shape=coef(fit)[1]
+# rate=coef(fit)[2]
+# 
+# numbers_at_length_NJ$gammafit = rgamma(n, shape=shape,  rate=rate)
+# numbers_at_length_NJ$gammafit = round(numbers_at_length_NJ$gammafit)
+# numbers_at_length_NJ$nfish = 1
+# numbers_at_length_NJ <-aggregate(numbers_at_length_NJ, by=list(numbers_at_length_NJ$gammafit),FUN=sum, na.rm=TRUE)
+# numbers_at_length_NJ$region="NJ"
+# 
+# names(numbers_at_length_NJ)[names(numbers_at_length_NJ) == "Group.1"] = "fitted_length"
+# numbers_at_length_NJ <-subset(numbers_at_length_NJ,  select=c(fitted_length, nfish))
+# sum_nfish= sum(numbers_at_length_NJ$nfish)
 
-numbers_at_length_NJ$gammafit = rgamma(n, shape=shape,  rate=rate)
-numbers_at_length_NJ$gammafit = round(numbers_at_length_NJ$gammafit)
 numbers_at_length_NJ$nfish = 1
-numbers_at_length_NJ <-aggregate(numbers_at_length_NJ, by=list(numbers_at_length_NJ$gammafit),FUN=sum, na.rm=TRUE)
-numbers_at_length_NJ$region="NJ"
-
+numbers_at_length_NJ <-aggregate(numbers_at_length_NJ$nfish, by=list(numbers_at_length_NJ$l_in_bin),FUN=sum, na.rm=TRUE)
 names(numbers_at_length_NJ)[names(numbers_at_length_NJ) == "Group.1"] = "fitted_length"
-numbers_at_length_NJ <-subset(numbers_at_length_NJ,  select=c(fitted_length, nfish))
+names(numbers_at_length_NJ)[names(numbers_at_length_NJ) == "x"] = "nfish"
 sum_nfish= sum(numbers_at_length_NJ$nfish)
 numbers_at_length_NJ$fitted_prob = numbers_at_length_NJ$nfish/sum_nfish
 numbers_at_length_NJ$region = "NJ"
 numbers_at_length_NJ$year = "y2"
-
 
 
 #Southern region
@@ -181,24 +167,30 @@ numbers_at_length_SO = numbers_at_length_SO[c(rep(row_inds, numbers_at_length_SO
 rownames(numbers_at_length_SO) = NULL
 
 
-fit = fitdistr(numbers_at_length_SO$l_in_bin, 'gamma')
-n = nrow(numbers_at_length_SO)
-shape=coef(fit)[1]
-rate=coef(fit)[2]
+# fit = fitdistr(numbers_at_length_SO$l_in_bin, 'gamma')
+# n = nrow(numbers_at_length_SO)
+# shape=coef(fit)[1]
+# rate=coef(fit)[2]
+# 
+# numbers_at_length_SO$gammafit = rgamma(n, shape=shape,  rate=rate)
+# numbers_at_length_SO$gammafit = round(numbers_at_length_SO$gammafit)
+# numbers_at_length_SO$nfish = 1
+# numbers_at_length_SO <-aggregate(numbers_at_length_SO, by=list(numbers_at_length_SO$gammafit),FUN=sum, na.rm=TRUE)
+# numbers_at_length_SO$region="SO"
+# 
+# names(numbers_at_length_SO)[names(numbers_at_length_SO) == "Group.1"] = "fitted_length"
+# numbers_at_length_SO <-subset(numbers_at_length_SO,  select=c(fitted_length, nfish))
+# sum_nfish= sum(numbers_at_length_SO$nfish)
 
-numbers_at_length_SO$gammafit = rgamma(n, shape=shape,  rate=rate)
-numbers_at_length_SO$gammafit = round(numbers_at_length_SO$gammafit)
 numbers_at_length_SO$nfish = 1
-numbers_at_length_SO <-aggregate(numbers_at_length_SO, by=list(numbers_at_length_SO$gammafit),FUN=sum, na.rm=TRUE)
-numbers_at_length_SO$region="SO"
-
-
+numbers_at_length_SO <-aggregate(numbers_at_length_SO$nfish, by=list(numbers_at_length_SO$l_in_bin),FUN=sum, na.rm=TRUE)
 names(numbers_at_length_SO)[names(numbers_at_length_SO) == "Group.1"] = "fitted_length"
-numbers_at_length_SO <-subset(numbers_at_length_SO,  select=c(fitted_length, nfish))
+names(numbers_at_length_SO)[names(numbers_at_length_SO) == "x"] = "nfish"
 sum_nfish= sum(numbers_at_length_SO$nfish)
 numbers_at_length_SO$fitted_prob = numbers_at_length_SO$nfish/sum_nfish
 numbers_at_length_SO$region = "SO"
 numbers_at_length_SO$year = "y2"
+
 
 
 #combine the datasets
