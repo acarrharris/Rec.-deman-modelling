@@ -1,8 +1,8 @@
 #The following creates an cathc-per-trip dataset adjusted to reflect the population size
 
 ###Northern states
-#catch_data <- read_excel("observed_catch_NO_19.xlsx")
-catch_data <- readRDS("observed_catch_NO_19.rds")
+catch_data <- read_excel("observed_catch_NO_19.xlsx")
+#catch_data <- readRDS("observed_catch_NO_19.rds")
 
 sf <- catch_data$sf_tot_cat
 bsb <- catch_data$bsb_tot_cat
@@ -37,8 +37,8 @@ coef(fit)
 saveRDS(fit, "catch_copula_NO_19.rds")
 
 ###New Jersey
-#catch_data <- read_excel("observed_catch_NJ_19.xlsx")
-catch_data <- readRDS("observed_catch_NJ_19.rds")
+catch_data <- read_excel("observed_catch_NJ_19.xlsx")
+#catch_data <- readRDS("observed_catch_NJ_19.rds")
 
 sf <- catch_data$sf_tot_cat
 bsb <- catch_data$bsb_tot_cat
@@ -74,8 +74,8 @@ saveRDS(fit, "catch_copula_NJ_19.rds")
 
 
 ###Southern states
-#catch_data <- read_excel("observed_catch_SO_19.xlsx")
-catch_data <- readRDS("observed_catch_SO_19.rds")
+catch_data <- read_excel("observed_catch_SO_19.xlsx")
+#catch_data <- readRDS("observed_catch_SO_19.rds")
 
 sf <- catch_data$sf_tot_cat
 bsb <- catch_data$bsb_tot_cat

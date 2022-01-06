@@ -140,6 +140,8 @@ source("calc_catch_per_trip_copulas.R")
 
 
 
+state_output = data.frame()
+for (x in 1:2){
 
 ##########  
 # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
@@ -149,12 +151,9 @@ source("catch at length given stock structure - prediction.R")
 
 
 
-
-
-
-
 ##########  
 # run the simulation code under the new set of regulations (regulatiopn file is directed_trips_region - alternative regs test.xlsx)
+
 
 source("prediction3 MA.R")
 source("prediction3 RI.R")
@@ -172,11 +171,39 @@ prediction_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_al
                                                       pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
 
 prediction_output_by_period[is.na(prediction_output_by_period)] = 0
-write_xlsx(prediction_output_by_period,"prediction_output_by_period.xlsx")
 
-aggregate_prediction_output= subset(prediction_output_by_period, select=-c(state, alt_regs, period))
-aggregate_prediction_output = aggregate(aggregate_prediction_output, by=list(aggregate_prediction_output$sim),FUN=sum, na.rm=TRUE)
-write_xlsx(aggregate_prediction_output,"aggregate_prediction_output.xlsx")
+
+state_prediction_output= subset(prediction_output_by_period, select=c(tot_keep, tot_rel,tot_keep_bsb, tot_rel_bsb,tot_keep_scup, tot_rel_scup,
+                                                                      tot_keep_wf, tot_rel_wf, tot_keep_rd, tot_rel_rd, observed_trips,
+                                                                      n_choice_occasions, period, state, change_CS ))
+
+
+state_prediction_output$state1=with(state_prediction_output, match(state, unique(state)))
+state_prediction_output1= subset(state_prediction_output, select=-c(state, period))
+state_prediction_output1=aggregate(state_prediction_output1, by=list(state_prediction_output1$state1),FUN=sum, na.rm=TRUE)
+state_prediction_output1= subset(state_prediction_output1, select=-c(state1))
+names(state_prediction_output1)[names(state_prediction_output1) == "Group.1"] = "state1"
+
+
+state_names=subset(state_prediction_output, select=c(state, state1))
+state_names = state_names[!duplicated(state_names), ]
+state_prediction_output1 =  merge(state_prediction_output1,state_names,by="state1", all.x=TRUE, all.y=TRUE)
+
+state_prediction_output1$draw = x
+
+
+state_output =rbind(state_output, state_prediction_output1)
+
+}
+
+
+
+
+#write_xlsx(prediction_output_by_period,"prediction_output_by_period.xlsx")
+
+#aggregate_prediction_output= subset(prediction_output_by_period, select=-c(state, alt_regs, period))
+#aggregate_prediction_output = aggregate(aggregate_prediction_output, by=list(aggregate_prediction_output$sim),FUN=sum, na.rm=TRUE)
+#write_xlsx(aggregate_prediction_output,"aggregate_prediction_output.xlsx")
 
 ##########  
 
