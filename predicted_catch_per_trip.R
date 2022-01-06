@@ -8,8 +8,9 @@ bsb <- catch_data$bsb_tot_cat
 
 
 #estimate the nb parameters
-nbfit_sf = fitdistr(sf, "Negative Binomial")
-summary(nbfit_sf)
+# nbfit_sf = fitdistr(sf, "Negative Binomial")
+# summary(nbfit_sf)
+nbfit_sf <- readRDS("nb_catch_parameters_sf_NO_19.rds")
 
 sf_mu <- nbfit_sf$estimate['mu']
 sf_mu
@@ -49,8 +50,10 @@ cv_sf_new
 
 
 # Get the black sea bass parameters 
-nbfit_bsb <- fitdistr(bsb, "Negative Binomial")
-nbfit_bsb
+# nbfit_bsb <- fitdistr(bsb, "Negative Binomial")
+# nbfit_bsb
+
+nbfit_bsb <- readRDS("nb_catch_parameters_bsb_NO_19.rds")
 
 bsb_mu <- nbfit_bsb$estimate['mu']
 bsb_mu
@@ -59,12 +62,13 @@ bsb_size
 
 
 #t copula
-t_cop_model <- tCopula(dim = 2)
-m <- pobs(as.matrix(cbind(sf,bsb)))
-fit <- fitCopula(t_cop_model, m, method = 'ml')
-fit
-coef(fit)
+# t_cop_model <- tCopula(dim = 2)
+# m <- pobs(as.matrix(cbind(sf,bsb)))
+# fit <- fitCopula(t_cop_model, m, method = 'ml')
+# fit
+# coef(fit)
 
+fit <- readRDS("catch_copula_NO_19.rds")
 
 # Set the parameters
 rho <- coef(fit)[1]
@@ -96,8 +100,10 @@ bsb <- catch_data$bsb_tot_cat
 
 
 #estimate the nb parameters
-nbfit_sf = fitdistr(sf, "Negative Binomial")
-summary(nbfit_sf)
+# nbfit_sf = fitdistr(sf, "Negative Binomial")
+# summary(nbfit_sf)
+
+nbfit_sf <- readRDS("nb_catch_parameters_sf_NJ_19.rds")
 
 sf_mu <- nbfit_sf$estimate['mu']
 sf_mu
@@ -137,8 +143,10 @@ cv_sf_new
 
 
 # Get the black sea bass parameters 
-nbfit_bsb <- fitdistr(bsb, "Negative Binomial")
-nbfit_bsb
+# nbfit_bsb <- fitdistr(bsb, "Negative Binomial")
+# nbfit_bsb
+
+nbfit_bsb <- readRDS("nb_catch_parameters_bsb_NJ_19.rds")
 
 bsb_mu <- nbfit_bsb$estimate['mu']
 bsb_mu
@@ -147,12 +155,13 @@ bsb_size
 
 
 #t copula
-t_cop_model <- tCopula(dim = 2)
-m <- pobs(as.matrix(cbind(sf,bsb)))
-fit <- fitCopula(t_cop_model, m, method = 'ml')
-fit
-coef(fit)
+# t_cop_model <- tCopula(dim = 2)
+# m <- pobs(as.matrix(cbind(sf,bsb)))
+# fit <- fitCopula(t_cop_model, m, method = 'ml')
+# fit
+# coef(fit)
 
+fit <- readRDS("catch_copula_NJ_19.rds")
 
 # Set the parameters
 rho <- coef(fit)[1]
@@ -184,8 +193,10 @@ bsb <- catch_data$bsb_tot_cat
 
 
 #estimate the nb parameters
-nbfit_sf = fitdistr(sf, "Negative Binomial")
-summary(nbfit_sf)
+# nbfit_sf = fitdistr(sf, "Negative Binomial")
+# summary(nbfit_sf)
+
+nbfit_sf <- readRDS("nb_catch_parameters_sf_SO_19.rds")
 
 sf_mu <- nbfit_sf$estimate['mu']
 sf_mu
@@ -224,12 +235,25 @@ cv_sf_base
 cv_sf_new
 
 
+# Get the black sea bass parameters 
+# nbfit_bsb <- fitdistr(bsb, "Negative Binomial")
+# nbfit_bsb
+nbfit_bsb <- readRDS("nb_catch_parameters_bsb_SO_19.rds")
+
+bsb_mu <- nbfit_bsb$estimate['mu']
+bsb_mu
+bsb_size <- nbfit_bsb$estimate['size']
+bsb_size
+
+
 #t copula
-t_cop_model <- tCopula(dim = 2)
-m <- pobs(as.matrix(cbind(sf,bsb)))
-fit <- fitCopula(t_cop_model, m, method = 'ml')
-fit
-coef(fit)
+# t_cop_model <- tCopula(dim = 2)
+# m <- pobs(as.matrix(cbind(sf,bsb)))
+# fit <- fitCopula(t_cop_model, m, method = 'ml')
+# fit
+# coef(fit)
+
+fit <- readRDS("catch_copula_SO_19.rds")
 
 
 # Set the parameters

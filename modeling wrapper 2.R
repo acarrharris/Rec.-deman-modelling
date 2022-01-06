@@ -132,6 +132,15 @@ calibration_catch_at_length= subset(assment_CAL, select=c(l_in_bin, calibration_
 
 
 
+##########
+# Estimate the catch-per-trip copulas so we don't re-estimate every time
+source("calc_catch_per_trip_copulas.R")
+##########
+
+
+
+
+
 ##########  
 # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
 # catch-at-length and catch-per-trip for summer flounder
