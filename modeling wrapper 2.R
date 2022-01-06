@@ -50,6 +50,7 @@ install.packages("univariateML")
 install.packages("xlsx")
 install.packages("writexl")
 install.packages("logspline")
+install.packages("xtable")
 
 library(psych)
 library(rgl)
