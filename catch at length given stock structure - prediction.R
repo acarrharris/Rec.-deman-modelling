@@ -20,7 +20,7 @@ age_length_key = data.frame(read_excel("com_sv_len_age_adj_2018.xlsx"))
 # numbers_at_age = data.frame(read_excel("numbers_at_age_2018.xlsx"))
 
 numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_sample100.xlsx"))
-numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==1)
+numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==x)
 
 
 # Merge the two above datasets and create population numbers-at-length (inches)
