@@ -109,6 +109,10 @@ calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_a
 calibration_output_by_period[is.na(calibration_output_by_period)] = 0
 write_xlsx(calibration_output_by_period,"calibration_output_by_period.xlsx")
 
+#Calibration by state
+aggregate(observed_trips ~ state, calibration_output_by_period, sum)
+aggregate(tot_keep ~ state, calibration_output_by_period, sum)
+aggregate(n_choice_occasions ~ state, calibration_output_by_period, sum)
 
 
 aggregate_calibration_output= subset(calibration_output_by_period, select=-c(state, alt_regs, period))
@@ -124,8 +128,11 @@ tot_sf_catch = tot_sf_keep+tot_sf_rel
 assment_CAL = data.frame(read_excel("assessment_catch_at_length.xlsx"))                                                                            
 assment_CAL$calibration_keep_at_length=assment_CAL$ab1_prop*tot_sf_keep
 assment_CAL$calibration_release_at_length=assment_CAL$b2_prop*tot_sf_rel
-
 calibration_catch_at_length= subset(assment_CAL, select=c(l_in_bin, calibration_keep_at_length, calibration_release_at_length))
+calibration_catch_at_length$tot_catch= calibration_catch_at_length$calibration_keep_at_length+calibration_catch_at_length$calibration_release_at_length
+
+
+
 
 ##########  
 
@@ -141,7 +148,7 @@ source("calc_catch_per_trip_copulas.R")
 
 
 state_output = data.frame()
-for (x in 1:2){
+for (x in 1:1){
 
 ##########  
 # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
@@ -171,6 +178,15 @@ prediction_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_al
                                                       pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
 
 prediction_output_by_period[is.na(prediction_output_by_period)] = 0
+
+
+#prediction by state
+aggregate(observed_trips ~ state, prediction_output_by_period, sum)
+aggregate(tot_keep ~ state, prediction_output_by_period, sum)
+aggregate(n_choice_occasions ~ state, prediction_output_by_period, sum)
+aggregate(observed_trips ~ state, prediction_output_by_period, sum)
+aggregate(observed_trips ~ state, calibration_output_by_period, sum)
+
 
 
 state_prediction_output= subset(prediction_output_by_period, select=c(tot_keep, tot_rel,tot_keep_bsb, tot_rel_bsb,tot_keep_scup, tot_rel_scup,

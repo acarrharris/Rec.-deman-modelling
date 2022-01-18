@@ -197,9 +197,7 @@ for (x in 1:2){
 }
 
 
-
-
-#write_xlsx(prediction_output_by_period,"prediction_output_by_period.xlsx")
+write_xlsx(state_output,"state_output.xlsx")
 
 #aggregate_prediction_output= subset(prediction_output_by_period, select=-c(state, alt_regs, period))
 #aggregate_prediction_output = aggregate(aggregate_prediction_output, by=list(aggregate_prediction_output$sim),FUN=sum, na.rm=TRUE)
