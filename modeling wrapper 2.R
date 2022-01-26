@@ -146,9 +146,10 @@ source("calc_catch_per_trip_copulas.R")
 
 
 
+ptm <- proc.time()
 
 state_output = data.frame()
-for (x in 1:1){
+for (x in 1:30){
 
 ##########  
 # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
@@ -212,10 +213,16 @@ state_output =rbind(state_output, state_prediction_output1)
 
 }
 
+write_xlsx(state_output,"state_output_sim30.xlsx")
+regional_output =subset(state_output, select=-c(state))
+regional_output=aggregate(regional_output, by=list(regional_output$draw),FUN=sum, na.rm=TRUE)
+regional_output =subset(regional_output, select=-c(state1, draw))
+names(regional_output)[names(regional_output) == "Group.1"] = "draw"
+names(regional_output)[names(regional_output) == "tot_keep"] = "tot_keep_sf"
+names(regional_output)[names(regional_output) == "tot_rel"] = "tot_rel_sf"
+write_xlsx(regional_output,"regional_output_sim30.xlsx")
 
 
-
-#write_xlsx(prediction_output_by_period,"prediction_output_by_period.xlsx")
 
 #aggregate_prediction_output= subset(prediction_output_by_period, select=-c(state, alt_regs, period))
 #aggregate_prediction_output = aggregate(aggregate_prediction_output, by=list(aggregate_prediction_output$sim),FUN=sum, na.rm=TRUE)
