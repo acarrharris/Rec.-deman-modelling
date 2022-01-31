@@ -27,3 +27,16 @@ cdf_fit$ylag= lag(cdf_fit$y, n = 1L, default = NA)
 cdf_fit$prob= cdf_fit$y-cdf_fit$ylag
 plot(cdf_fit$x,cdf_fit$prob)
 
+
+
+cdf_star = subset(cdf_fit, select = c(x, prob))
+names(cdf_star)[names(cdf_star) == "x"] = "fitted_length"
+names(cdf_star)[names(cdf_star) == "prob"] = "fitted_prob"
+
+cdf_star[is.na(cdf_star)] = 0
+sum(cdf_star$fitted_prob )
+
+write_xlsx(cdf_star,"cdf_star.xlsx")
+
+
+

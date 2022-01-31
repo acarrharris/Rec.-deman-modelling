@@ -17,11 +17,11 @@ age_length_key = data.frame(read_excel("com_sv_len_age_adj_2018.xlsx"))
 
 #import a test numbers-at-age dataset
 # THIS IS WHERE TO IMPORT THE NUMBERS AT AGE FROM THE OPERATING MODEL
-numbers_at_age = data.frame(read_excel("numbers_at_age_2018.xlsx"))
+#numbers_at_age = data.frame(read_excel("numbers_at_age_2018.xlsx"))
 
 #numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_sample100.xlsx"))
 #numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==x)
-#numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
+numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
 
 
 # Merge the two above datasets and create population numbers-at-length (inches)
@@ -46,7 +46,7 @@ sum(numbers_at_length$N_l)
 
 
 # Import and merge the selectivity data to this file 
-selectivity = data.frame(read_excel("rec_selectivity.xlsx"))
+selectivity = data.frame(read_excel("rec_selectivity_MRIP_ALS.xlsx"))
 selectivity <-subset(selectivity, select=c(l_in_bin, region, q, E, C_l))
 numbers_at_length_new =  merge(selectivity,numbers_at_length,by="l_in_bin", all.x=TRUE, all.y=TRUE)
 
