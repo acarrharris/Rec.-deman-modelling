@@ -146,8 +146,8 @@ for (x in 1:1){
   ##########  
   # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
   # catch-at-length and catch-per-trip for summer flounder
-  #source("CAL given stock structure - assessment coastwide - prediction.R")
-  #source("CAL given stock structure - prediction.R")
+  source("CAL given stock structure - assessment coastwide - prediction.R")
+  #source("catch at length given stock structure - prediction.R")
   
   ##########  
   

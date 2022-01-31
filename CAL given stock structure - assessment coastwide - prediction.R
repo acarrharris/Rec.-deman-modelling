@@ -46,7 +46,7 @@ sum(numbers_at_length$N_l)
 
 
 # Import and merge the selectivity data to this file 
-selectivity = data.frame(read_excel("rec_selectivity_coastwide_assessment.xlsx"))
+selectivity = data.frame(read_excel("rec_selectivity_coastwide_cdf_star.xlsx"))
 selectivity <-subset(selectivity, select=c(l_in_bin, q, E, C_l))
 numbers_at_length_new =  merge(selectivity,numbers_at_length,by="l_in_bin", all.x=TRUE, all.y=TRUE)
 
