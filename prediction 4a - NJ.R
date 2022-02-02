@@ -16,8 +16,8 @@
 # 4) Set of utility parameters draws from one of the four surveys, for MA-NY states: utility_param_draws_MA_NY.xlsx
 
 
-state1="MA"
-region1="NO"
+state1="NJ"
+region1="NJ"
 
 
 # Input the calibration output which contains the number of choice occasions needed to simulate
@@ -63,7 +63,7 @@ for(p in levels(periodz)){
   for(i in 1:10) {
     
     # Input catch-per-trip numbers 
-    sf_catch_data = data.frame(read_excel("NO_catch_data_sim1.xlsx")) ###                                                                            
+    sf_catch_data = data.frame(read_excel("NJ_catch_data_sim1.xlsx")) ###                                                                            
     tot_sf_catch = sf_catch_data$sf_t_nb
     tot_bsb_catch = sf_catch_data$bsb_t_nb
     sf_catch_data = data.frame(tot_sf_catch,tot_bsb_catch)
@@ -219,7 +219,7 @@ for(p in levels(periodz)){
       
       bsb_catch_data1= as.data.frame(bsb_catch_data)  
       bsb_catch_data1$uniform=runif(nrow(bsb_catch_data1))
-      bsb_catch_data1$keep = ifelse(bsb_catch_data1$uniform>=.67, 1,0) 
+      bsb_catch_data1$keep = ifelse(bsb_catch_data1$uniform>=0.93, 1,0) 
       bsb_catch_data1$release = ifelse(bsb_catch_data1$keep==0, 1,0) 
       
       bsb_catch_data1=subset(bsb_catch_data1, select=c(tripid, keep, release))
@@ -268,13 +268,17 @@ for(p in levels(periodz)){
     
     # merge catch information for other species. Assume per-trip catch outcomes for these species are the same as the calibration. 
     # This info is contained in the costs_new_all_state datasets
-    sc_data=subset(costs_new_all_MA, period ==p & catch_draw==i, select=c(tripid,tot_keep_scup_base, tot_rel_scup_base )) 
+    sc_wf_data=subset(costs_new_all_NJ, period ==p & catch_draw==i, select=c(tripid,tot_keep_scup_base, tot_rel_scup_base,
+                                                                             tot_keep_wf_base, tot_rel_wf_base )) 
     
-    names(sc_data)[names(sc_data) == "tot_keep_scup_base"] = "tot_keep_scup"
-    names(sc_data)[names(sc_data) == "tot_rel_scup_base"] = "tot_rel_scup"
+    names(sc_wf_data)[names(sc_wf_data) == "tot_keep_scup_base"] = "tot_keep_scup"
+    names(sc_wf_data)[names(sc_wf_data) == "tot_rel_scup_base"] = "tot_rel_scup"
+    names(sc_wf_data)[names(sc_wf_data) == "tot_keep_wf_base"] = "tot_keep_wf"
+    names(sc_wf_data)[names(sc_wf_data) == "tot_rel_wf_base"] = "tot_rel_wf"
+    
     
     # merge the trip data (summer flounder catch + lengths) with the other species data (numbers kept and released))
-    trip_data =  merge(trip_data,sc_data,by="tripid")
+    trip_data =  merge(trip_data,sc_wf_data,by="tripid")
     trip_data[is.na(trip_data)] = 0        
     
     
@@ -305,19 +309,19 @@ pds_all[is.na(pds_all)] = 0
 
 
 # Now calculate trip probabilities and utilities based on the multiple catch draws for each choice occasion
-utility_state0_MA = list()
+utility_state0_NJ = list()
 pds_new = list()
 for(p in levels(periodz)){
   
-
+  
   # Add trip costs. Assign choice occasion a shore or boat trip cost in proportion to estimated number of
   # directed fluke trips by mode. I copied the proportions below from directed_trips_by_state_mode.dta
   pds=subset(pds_all, period==p)
   
   max_trip=max(pds$tripid)
-  charter=round(max_trip*.04)
-  headboat=round(max_trip*.02)
-  private=round(max_trip*.68)
+  charter=round(max_trip*.01)
+  headboat=round(max_trip*.01)
+  private=round(max_trip*.48)
   shore = max_trip-charter-headboat-private
   
   charter_draws = trip_cost_data_chart[sample(nrow(trip_cost_data_chart), charter), ]
@@ -333,30 +337,32 @@ for(p in levels(periodz)){
   
   
   #set up an output file for each draw of utility parameters
-  parameter_draws_MA = list()
+  parameter_draws_NJ = list()
   
   for(d in 1:1) {
     
     #Create random draws of preference parameters based on the estimated means and SD from the choice model
     #For now I am drawing only one set of utility parameters across the sample 
     
-    param_draws_MA = as.data.frame(1:10000)
-    names(param_draws_MA)[names(param_draws_MA) == "1:10000"] = "tripid"
-    # 
-    param_draws_MA$beta_sqrt_sf_keep = rnorm(10000, mean = 0.559, sd = 0.678)
-    param_draws_MA$beta_sqrt_sf_release = rnorm(10000, mean = 0, sd = 0.336)
-    param_draws_MA$beta_sqrt_bsb_keep = rnorm(10000, mean = 0.275, sd = 0.261)
-    param_draws_MA$beta_sqrt_bsb_release = rnorm(10000, mean = 0, sd = 0)
-    param_draws_MA$beta_sqrt_scup_keep = rnorm(10000, mean = 0.075, sd = 0.143)
-    param_draws_MA$beta_sqrt_scup_release = rnorm(10000, mean = 0, sd = 0)
-    param_draws_MA$beta_opt_out = rnorm(10000, mean = -2.641, sd = 2.554)
-    param_draws_MA$beta_striper_blue = rnorm(10000, mean = 1.429, sd = 1.920)
-    param_draws_MA$beta_cost = rnorm(10000, mean = -0.012, sd = 0)
+    param_draws_NJ = as.data.frame(1:10000)
+    names(param_draws_NJ)[names(param_draws_NJ) == "1:10000"] = "tripid"
+    
+    param_draws_NJ$beta_sqrt_sf_keep = rnorm(10000, mean = 0.762, sd = 0.677)
+    param_draws_NJ$beta_sqrt_sf_release = rnorm(10000, mean = 0.0, sd = 0.181)
+    param_draws_NJ$beta_sqrt_bsb_keep = rnorm(10000, mean = 0.174, sd = 0.334)
+    param_draws_NJ$beta_sqrt_bsb_release = rnorm(10000, mean = 0, sd = 0)
+    param_draws_NJ$beta_sqrt_scup_keep = rnorm(10000, mean = 0.097, sd =  0.113)
+    param_draws_NJ$beta_sqrt_scup_release = rnorm(10000, mean = -0.039, sd = 0.117)
+    param_draws_NJ$beta_sqrt_wf_keep = rnorm(10000, mean = 0.394, sd =  0.199)
+    param_draws_NJ$beta_sqrt_wf_release = rnorm(10000, mean = 0.093, sd = 0.278)
+    param_draws_NJ$beta_opt_out = rnorm(10000, mean = -2.095, sd = 2.394)
+    param_draws_NJ$beta_striper_blue = rnorm(10000, mean = 1.139, sd = 1.832)
+    param_draws_NJ$beta_cost = rnorm(10000, mean = -0.009, sd = 0)
     
     
-    param_draws_MA$parameter_draw=d
+    param_draws_NJ$parameter_draw=d
     
-    trip_data =  merge(param_draws_MA,trip_data,by="tripid")
+    trip_data =  merge(param_draws_NJ,trip_data,by="tripid")
     
     
     #Expected utility
@@ -365,7 +371,9 @@ for(p in levels(periodz)){
       trip_data$beta_sqrt_bsb_keep*sqrt(trip_data$tot_keep_bsb) +
       trip_data$beta_sqrt_bsb_release*sqrt(trip_data$tot_rel_bsb) +  
       trip_data$beta_sqrt_scup_keep*sqrt(trip_data$tot_keep_scup) +
-      trip_data$beta_sqrt_scup_release*sqrt(trip_data$tot_rel_scup) +    
+      trip_data$beta_sqrt_scup_release*sqrt(trip_data$tot_rel_scup) + 
+      trip_data$beta_sqrt_wf_keep*sqrt(trip_data$tot_keep_wf) +
+      trip_data$beta_sqrt_wf_release*sqrt(trip_data$tot_rel_wf) +   
       trip_data$beta_cost*trip_data$cost 
     
     trip_data$period=as.numeric(trip_data$period)
@@ -401,7 +409,7 @@ for(p in levels(periodz)){
     # and the sum of exponentiated expected utility across the three altenratives.
     # You will notice the striper_blue alternative has a large proabability based on the utility parameters
     mean_trip_data$prob0 = mean_trip_data$v0_row_sum/mean_trip_data$v0_col_sum
-
+    
     #subset the mean trip data by keeping the tripid, non-SF/BSB catch variables, cost, and expected utilities associated with each alternative. 
     #Will merge this information to the next simulation to calculate welfare changes
     mean_trip_data_s0=subset(mean_trip_data, select=c(tripid, period, alt, prob0, v0_col_sum, 
@@ -409,15 +417,17 @@ for(p in levels(periodz)){
                                                       beta_sqrt_sf_keep, beta_sqrt_sf_release,
                                                       beta_sqrt_bsb_keep, beta_sqrt_bsb_release, 
                                                       beta_sqrt_scup_keep, beta_sqrt_scup_release, 
+                                                      beta_sqrt_wf_keep, beta_sqrt_wf_release,
                                                       beta_cost, beta_striper_blue, beta_opt_out))
     mean_trip_data_s0$draw=d
-    utility_state0_MA[[p]]=mean_trip_data_s0
+    utility_state0_NJ[[p]]=mean_trip_data_s0
     
     
     # Get rid of things we don't need. 
     mean_trip_data = subset(mean_trip_data, alt==1, select=-c(alt, opt_out, striper_blue, v0_optout, v0_striper_blue, v0_row_sum, v0_col_sum,
                                                               beta_cost, beta_striper_blue, beta_opt_out, beta_sqrt_scup_release, beta_sqrt_scup_keep,
-                                                              beta_sqrt_bsb_release, beta_sqrt_bsb_keep, beta_sqrt_sf_release, beta_sqrt_sf_keep))
+                                                              beta_sqrt_bsb_release, beta_sqrt_bsb_keep, beta_sqrt_sf_release, beta_sqrt_sf_keep,
+                                                              beta_sqrt_wf_release, beta_sqrt_wf_keep))
     
     ls(mean_trip_data)
     
@@ -489,12 +499,12 @@ for(p in levels(periodz)){
 }
 
 
-pds_new_all_MA=list.stack(pds_new, fill=TRUE)
+pds_new_all_NJ=list.stack(pds_new, fill=TRUE)
 
-pds_new_all_MA[is.na(pds_new_all_MA)] = 0
-pds_new_all_MA$state = state1
+pds_new_all_NJ[is.na(pds_new_all_NJ)] = 0
+pds_new_all_NJ$state = state1
 
-utility_state0_MA_all=list.stack(utility_state0_MA, fill=TRUE)
+utility_state0_NJ_all=list.stack(utility_state0_NJ, fill=TRUE)
 
 
 

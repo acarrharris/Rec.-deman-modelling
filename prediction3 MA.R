@@ -376,6 +376,7 @@ for(p in levels(periodz)){
     #change in Consmer surplus between prediction year and baseline year 
     mean_trip_data$change_CS = (1/mean_trip_data$beta_cost)*(log(mean_trip_data$vA_col_sum) - log(mean_trip_data$v0_col_sum))
     
+    
     # Caluculate the probability of a respondent selected each alternative based on 
     # exponentiated expected utility of the altenrative [exp(expected utility, alt=i] 
     # and the sum of exponentiated expected utility across the three altenratives.
@@ -445,11 +446,8 @@ for(p in levels(periodz)){
   }
   
   parameter_draws_all = as.data.frame(bind_rows(parameter_draws[[1]]))
-  
-  
   parameter_draws_all[is.na(parameter_draws_all)] = 0
   rownames(parameter_draws_all) = NULL
-  
   
   parameter_draws_all$period=p
   pds_new[[p]]=parameter_draws_all

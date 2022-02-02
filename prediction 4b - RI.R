@@ -16,7 +16,7 @@
 # 4) Set of utility parameters draws from one of the four surveys, for MA-NY states: utility_param_draws_MA_NY.xlsx
 
 
-state1="MA"
+state1="RI"
 region1="NO"
 
 
@@ -48,9 +48,9 @@ for(p in levels(periodz)){
   directed_trips_p = subset(directed_trips, period == p)
   n_trips = mean(directed_trips_p$dtrip_2019)
   n_draws = min(1000,n_trips*2.5 )
-  fluke_bag = mean(directed_trips_p$fluke_bag_2019) ###
-  fluke_min = mean(directed_trips_p$fluke_min_2019) ###
-  fluke_max = mean(directed_trips_p$fluke_max_2019) ###
+  fluke_bag = mean(directed_trips_p$fluke_bag) ###
+  fluke_min = mean(directed_trips_p$fluke_min) ###
+  fluke_max = mean(directed_trips_p$fluke_max) ###
   bsb_bag = mean(directed_trips_p$bsb_bag)
   bsb_min = mean(directed_trips_p$bsb_min)
   scup_bag = mean(directed_trips_p$scup_bag)
@@ -63,7 +63,7 @@ for(p in levels(periodz)){
   for(i in 1:10) {
     
     # Input catch-per-trip numbers 
-    sf_catch_data = data.frame(read_excel("NO_catch_data_sim1.xlsx")) ###                                                                            
+    sf_catch_data = data.frame(read_excel("predicted_catch_NO.xlsx")) ###                                                                            
     tot_sf_catch = sf_catch_data$sf_t_nb
     tot_bsb_catch = sf_catch_data$bsb_t_nb
     sf_catch_data = data.frame(tot_sf_catch,tot_bsb_catch)
@@ -219,7 +219,7 @@ for(p in levels(periodz)){
       
       bsb_catch_data1= as.data.frame(bsb_catch_data)  
       bsb_catch_data1$uniform=runif(nrow(bsb_catch_data1))
-      bsb_catch_data1$keep = ifelse(bsb_catch_data1$uniform>=.67, 1,0) 
+      bsb_catch_data1$keep = ifelse(bsb_catch_data1$uniform>=.66, 1,0) 
       bsb_catch_data1$release = ifelse(bsb_catch_data1$keep==0, 1,0) 
       
       bsb_catch_data1=subset(bsb_catch_data1, select=c(tripid, keep, release))
@@ -264,20 +264,6 @@ for(p in levels(periodz)){
     
     
     
-    
-    
-    # merge catch information for other species. Assume per-trip catch outcomes for these species are the same as the calibration. 
-    # This info is contained in the costs_new_all_state datasets
-    sc_data=subset(costs_new_all_MA, period ==p & catch_draw==i, select=c(tripid,tot_keep_scup_base, tot_rel_scup_base )) 
-    
-    names(sc_data)[names(sc_data) == "tot_keep_scup_base"] = "tot_keep_scup"
-    names(sc_data)[names(sc_data) == "tot_rel_scup_base"] = "tot_rel_scup"
-    
-    # merge the trip data (summer flounder catch + lengths) with the other species data (numbers kept and released))
-    trip_data =  merge(trip_data,sc_data,by="tripid")
-    trip_data[is.na(trip_data)] = 0        
-    
-    
     trip_data$catch_draw=i
     dfs[[i]]=trip_data
     
@@ -305,62 +291,31 @@ pds_all[is.na(pds_all)] = 0
 
 
 # Now calculate trip probabilities and utilities based on the multiple catch draws for each choice occasion
-utility_state0_MA = list()
 pds_new = list()
 for(p in levels(periodz)){
   
-
-  # Add trip costs. Assign choice occasion a shore or boat trip cost in proportion to estimated number of
-  # directed fluke trips by mode. I copied the proportions below from directed_trips_by_state_mode.dta
-  pds=subset(pds_all, period==p)
   
-  max_trip=max(pds$tripid)
-  charter=round(max_trip*.04)
-  headboat=round(max_trip*.02)
-  private=round(max_trip*.68)
-  shore = max_trip-charter-headboat-private
+  trip_data=subset(pds_all, period==p)
   
-  charter_draws = trip_cost_data_chart[sample(nrow(trip_cost_data_chart), charter), ]
-  headboat_draws = trip_cost_data_headb[sample(nrow(trip_cost_data_headb), headboat), ]
-  privt_draws = trip_cost_data_privt[sample(nrow(trip_cost_data_privt), private), ]
-  shore_draws = trip_cost_data_shore[sample(nrow(trip_cost_data_shore), shore), ]
+  utility_zero=subset(utility_state0_RI_all, period==p, select=c(tripid, cost, tot_keep_scup, tot_rel_scup,
+                                                                 beta_sqrt_sf_keep, beta_sqrt_sf_release,
+                                                                 beta_sqrt_bsb_keep, beta_sqrt_bsb_release, 
+                                                                 beta_sqrt_scup_keep, beta_sqrt_scup_release, 
+                                                                 beta_cost, beta_striper_blue, beta_opt_out))
+  utility_zero = utility_zero[!duplicated(utility_zero), ]
   
-  cost_data = bind_rows(charter_draws, headboat_draws,privt_draws, shore_draws )
-  cost_data$tripid = 1:nrow(cost_data)
-  cost_data= subset(cost_data, select=c(tripid, cost))
-  trip_data =  merge(pds,cost_data,by="tripid")
+  trip_data =  merge(trip_data,utility_zero,by="tripid")
   trip_data[is.na(trip_data)] = 0
   
   
   #set up an output file for each draw of utility parameters
-  parameter_draws_MA = list()
+  parameter_draws_RI = list()
   
   for(d in 1:1) {
-    
-    #Create random draws of preference parameters based on the estimated means and SD from the choice model
-    #For now I am drawing only one set of utility parameters across the sample 
-    
-    param_draws_MA = as.data.frame(1:10000)
-    names(param_draws_MA)[names(param_draws_MA) == "1:10000"] = "tripid"
-    # 
-    param_draws_MA$beta_sqrt_sf_keep = rnorm(10000, mean = 0.559, sd = 0.678)
-    param_draws_MA$beta_sqrt_sf_release = rnorm(10000, mean = 0, sd = 0.336)
-    param_draws_MA$beta_sqrt_bsb_keep = rnorm(10000, mean = 0.275, sd = 0.261)
-    param_draws_MA$beta_sqrt_bsb_release = rnorm(10000, mean = 0, sd = 0)
-    param_draws_MA$beta_sqrt_scup_keep = rnorm(10000, mean = 0.075, sd = 0.143)
-    param_draws_MA$beta_sqrt_scup_release = rnorm(10000, mean = 0, sd = 0)
-    param_draws_MA$beta_opt_out = rnorm(10000, mean = -2.641, sd = 2.554)
-    param_draws_MA$beta_striper_blue = rnorm(10000, mean = 1.429, sd = 1.920)
-    param_draws_MA$beta_cost = rnorm(10000, mean = -0.012, sd = 0)
-    
-    
-    param_draws_MA$parameter_draw=d
-    
-    trip_data =  merge(param_draws_MA,trip_data,by="tripid")
-    
+    ls(trip_data)
     
     #Expected utility
-    trip_data$v0 = trip_data$beta_sqrt_sf_keep*sqrt(trip_data$tot_keep) +
+    trip_data$vA = trip_data$beta_sqrt_sf_keep*sqrt(trip_data$tot_keep) +
       trip_data$beta_sqrt_sf_release*sqrt(trip_data$tot_rel) +  
       trip_data$beta_sqrt_bsb_keep*sqrt(trip_data$tot_keep_bsb) +
       trip_data$beta_sqrt_bsb_release*sqrt(trip_data$tot_rel_bsb) +  
@@ -369,6 +324,7 @@ for(p in levels(periodz)){
       trip_data$beta_cost*trip_data$cost 
     
     trip_data$period=as.numeric(trip_data$period)
+    trip_data$parameter_draw=d
     
     # Collapse data from the X catch draws so that each row contains mean values
     mean_trip_data <-aggregate(trip_data, by=list(trip_data$tripid),FUN=mean, na.rm=TRUE)
@@ -385,37 +341,35 @@ for(p in levels(periodz)){
     mean_trip_data$striper_blue = ifelse(mean_trip_data$alt!=1 & mean_trip_data$alt!=3, 1,0) 
     
     #Caluculate the expected utility of alts 2 and 3 based on the parameters of the utility function
-    mean_trip_data$v0_optout= mean_trip_data$beta_opt_out*mean_trip_data$opt_out 
-    mean_trip_data$v0_striper_blue= mean_trip_data$beta_striper_blue*mean_trip_data$striper_blue 
+    mean_trip_data$vA_optout= mean_trip_data$beta_opt_out*mean_trip_data$opt_out 
+    mean_trip_data$vA_striper_blue= mean_trip_data$beta_striper_blue*mean_trip_data$striper_blue 
     
     #Now put these three values in the same column, exponentiate, and caluculate their sum (vA_col_sum)
-    mean_trip_data$v0[mean_trip_data$alt!=1] <- 0
-    mean_trip_data$v0_row_sum = rowSums(mean_trip_data[,c("v0", "v0_striper_blue","v0_optout")])
-    mean_trip_data$v0_row_sum = exp(mean_trip_data$v0_row_sum)
-    mean_trip_data$v0_col_sum = ave(mean_trip_data$v0_row_sum, mean_trip_data$tripid, FUN = sum)
+    mean_trip_data$vA[mean_trip_data$alt!=1] <- 0
+    mean_trip_data$vA_row_sum = rowSums(mean_trip_data[,c("vA", "vA_striper_blue","vA_optout")])
+    mean_trip_data$vA_row_sum = exp(mean_trip_data$vA_row_sum)
+    mean_trip_data$vA_col_sum = ave(mean_trip_data$vA_row_sum, mean_trip_data$tripid, FUN = sum)
     
     
     
-    # Caluculate the probability of a respondent selected each alternative based on 
-    # exponentiated expected utility of the altenrative [exp(expected utility, alt=i] 
-    # and the sum of exponentiated expected utility across the three altenratives.
-    # You will notice the striper_blue alternative has a large proabability based on the utility parameters
-    mean_trip_data$prob0 = mean_trip_data$v0_row_sum/mean_trip_data$v0_col_sum
-
-    #subset the mean trip data by keeping the tripid, non-SF/BSB catch variables, cost, and expected utilities associated with each alternative. 
-    #Will merge this information to the next simulation to calculate welfare changes
-    mean_trip_data_s0=subset(mean_trip_data, select=c(tripid, period, alt, prob0, v0_col_sum, 
-                                                      cost, tot_keep_scup, tot_rel_scup,
-                                                      beta_sqrt_sf_keep, beta_sqrt_sf_release,
-                                                      beta_sqrt_bsb_keep, beta_sqrt_bsb_release, 
-                                                      beta_sqrt_scup_keep, beta_sqrt_scup_release, 
-                                                      beta_cost, beta_striper_blue, beta_opt_out))
-    mean_trip_data_s0$draw=d
-    utility_state0_MA[[p]]=mean_trip_data_s0
+    # Calculate the probability of a respondent selected each alternative based on 
+    # exponentiated expected utility of the alternative [exp(expected utility, alt=i] 
+    # and the sum of exponentiated expected utility across the three alternatives.
+    # You will notice the striper_blue alternative has a large probability based on the utility parameters
+    mean_trip_data$probA = mean_trip_data$vA_row_sum/mean_trip_data$vA_col_sum
+    
+    
+    #select original expected utilities from utility_state0_MA_all, then merge to mean_trip_data
+    v0 =  subset(utility_state0_RI_all, period==p, select=c(tripid, alt, v0_col_sum))
+    mean_trip_data =  merge(mean_trip_data,v0,by=c("tripid", "alt"))
+    
+    #change in Consmer surplus between prediction year and baseline year 
+    mean_trip_data$change_CS = (1/mean_trip_data$beta_cost)*(log(mean_trip_data$vA_col_sum) - log(mean_trip_data$v0_col_sum))
+    
     
     
     # Get rid of things we don't need. 
-    mean_trip_data = subset(mean_trip_data, alt==1, select=-c(alt, opt_out, striper_blue, v0_optout, v0_striper_blue, v0_row_sum, v0_col_sum,
+    mean_trip_data = subset(mean_trip_data, alt==1, select=-c(alt, opt_out, striper_blue, vA_optout, vA_striper_blue, vA_row_sum, v0_col_sum, vA_col_sum,
                                                               beta_cost, beta_striper_blue, beta_opt_out, beta_sqrt_scup_release, beta_sqrt_scup_keep,
                                                               beta_sqrt_bsb_release, beta_sqrt_bsb_keep, beta_sqrt_sf_release, beta_sqrt_sf_keep))
     
@@ -424,11 +378,11 @@ for(p in levels(periodz)){
     # Multiply the trip probability by each of the catch variables (not the variable below) to get probability-weighted catch
     list_names = colnames(mean_trip_data)[colnames(mean_trip_data) !="Group.1" & colnames(mean_trip_data) !="tripid" 
                                           & colnames(mean_trip_data) !="catch_draw" & colnames(mean_trip_data) !="period"
-                                          & colnames(mean_trip_data) !="cost" & colnames(mean_trip_data) !="v0"
-                                          & colnames(mean_trip_data) !="prob0" & colnames(mean_trip_data) !="parameter_draw" ]
+                                          & colnames(mean_trip_data) !="cost" & colnames(mean_trip_data) !="vA" & colnames(mean_trip_data) !="change_CS"
+                                          & colnames(mean_trip_data) !="probA" & colnames(mean_trip_data) !="parameter_draw" ]
     
     for (l in list_names){
-      mean_trip_data[,l] = mean_trip_data[,l]*mean_trip_data$prob0
+      mean_trip_data[,l] = mean_trip_data[,l]*mean_trip_data$probA
     }
     
     
@@ -443,7 +397,7 @@ for(p in levels(periodz)){
     
     list_names = colnames(mean_trip_data)[colnames(mean_trip_data) !="Group.1" & colnames(mean_trip_data) !="tripid" 
                                           & colnames(mean_trip_data) !="catch_draw" & colnames(mean_trip_data) !="period"
-                                          & colnames(mean_trip_data) !="cost" & colnames(mean_trip_data) !="v0" 
+                                          & colnames(mean_trip_data) !="cost" & colnames(mean_trip_data) !="vA" 
                                           & colnames(mean_trip_data) !="parameter_draw"]
     
     for (l in list_names){
@@ -451,7 +405,7 @@ for(p in levels(periodz)){
     }
     
     #This equals the observed number of trips under the new conditions
-    sum(mean_trip_data$prob0)
+    sum(mean_trip_data$probA)
     
     #This should equal the observed # of trips in that period of the baseline year
     
@@ -459,7 +413,7 @@ for(p in levels(periodz)){
     
     ls(mean_trip_data)
     
-    mean_trip_data=subset(mean_trip_data, select=-c(catch_draw, cost, parameter_draw, Group.1, period,tripid, v0 ))
+    mean_trip_data=subset(mean_trip_data, select=-c(catch_draw, cost, parameter_draw, Group.1, period,tripid, vA ))
     ls(mean_trip_data)
     
     
@@ -470,7 +424,7 @@ for(p in levels(periodz)){
     ls(aggregate_trip_data)
     
     aggregate_trip_data = subset(aggregate_trip_data, select=-c(Group.1,  sim))
-    names(aggregate_trip_data)[names(aggregate_trip_data) == "prob0"] = "observed_trips0"
+    names(aggregate_trip_data)[names(aggregate_trip_data) == "probA"] = "observed_tripsA"
     
     
     aggregate_trip_data$sim = d
@@ -489,12 +443,8 @@ for(p in levels(periodz)){
 }
 
 
-pds_new_all_MA=list.stack(pds_new, fill=TRUE)
-
-pds_new_all_MA[is.na(pds_new_all_MA)] = 0
-pds_new_all_MA$state = state1
-
-utility_state0_MA_all=list.stack(utility_state0_MA, fill=TRUE)
-
+pds_new_all_RI_alt=list.stack(pds_new, fill=TRUE)
+pds_new_all_RI_alt[is.na(pds_new_all_RI_alt)] = 0
+pds_new_all_RI_alt$state = state1
 
 

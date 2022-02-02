@@ -16,7 +16,7 @@
 # 4) Set of utility parameters draws from one of the four surveys, for MA-NY states: utility_param_draws_MA_NY.xlsx
 
 
-state1="MA"
+state1="NY"
 region1="NO"
 
 
@@ -219,7 +219,7 @@ for(p in levels(periodz)){
       
       bsb_catch_data1= as.data.frame(bsb_catch_data)  
       bsb_catch_data1$uniform=runif(nrow(bsb_catch_data1))
-      bsb_catch_data1$keep = ifelse(bsb_catch_data1$uniform>=.67, 1,0) 
+      bsb_catch_data1$keep = ifelse(bsb_catch_data1$uniform>=.87, 1,0) 
       bsb_catch_data1$release = ifelse(bsb_catch_data1$keep==0, 1,0) 
       
       bsb_catch_data1=subset(bsb_catch_data1, select=c(tripid, keep, release))
@@ -268,7 +268,7 @@ for(p in levels(periodz)){
     
     # merge catch information for other species. Assume per-trip catch outcomes for these species are the same as the calibration. 
     # This info is contained in the costs_new_all_state datasets
-    sc_data=subset(costs_new_all_MA, period ==p & catch_draw==i, select=c(tripid,tot_keep_scup_base, tot_rel_scup_base )) 
+    sc_data=subset(costs_new_all_NY, period ==p & catch_draw==i, select=c(tripid,tot_keep_scup_base, tot_rel_scup_base )) 
     
     names(sc_data)[names(sc_data) == "tot_keep_scup_base"] = "tot_keep_scup"
     names(sc_data)[names(sc_data) == "tot_rel_scup_base"] = "tot_rel_scup"
@@ -305,19 +305,19 @@ pds_all[is.na(pds_all)] = 0
 
 
 # Now calculate trip probabilities and utilities based on the multiple catch draws for each choice occasion
-utility_state0_MA = list()
+utility_state0_NY = list()
 pds_new = list()
 for(p in levels(periodz)){
   
-
+  
   # Add trip costs. Assign choice occasion a shore or boat trip cost in proportion to estimated number of
   # directed fluke trips by mode. I copied the proportions below from directed_trips_by_state_mode.dta
   pds=subset(pds_all, period==p)
   
   max_trip=max(pds$tripid)
-  charter=round(max_trip*.04)
-  headboat=round(max_trip*.02)
-  private=round(max_trip*.68)
+  charter=round(max_trip*.005)
+  headboat=round(max_trip*.03)
+  private=round(max_trip*.61)
   shore = max_trip-charter-headboat-private
   
   charter_draws = trip_cost_data_chart[sample(nrow(trip_cost_data_chart), charter), ]
@@ -333,30 +333,30 @@ for(p in levels(periodz)){
   
   
   #set up an output file for each draw of utility parameters
-  parameter_draws_MA = list()
+  parameter_draws_NY = list()
   
   for(d in 1:1) {
     
     #Create random draws of preference parameters based on the estimated means and SD from the choice model
     #For now I am drawing only one set of utility parameters across the sample 
     
-    param_draws_MA = as.data.frame(1:10000)
-    names(param_draws_MA)[names(param_draws_MA) == "1:10000"] = "tripid"
+    param_draws_NY = as.data.frame(1:10000)
+    names(param_draws_NY)[names(param_draws_NY) == "1:10000"] = "tripid"
     # 
-    param_draws_MA$beta_sqrt_sf_keep = rnorm(10000, mean = 0.559, sd = 0.678)
-    param_draws_MA$beta_sqrt_sf_release = rnorm(10000, mean = 0, sd = 0.336)
-    param_draws_MA$beta_sqrt_bsb_keep = rnorm(10000, mean = 0.275, sd = 0.261)
-    param_draws_MA$beta_sqrt_bsb_release = rnorm(10000, mean = 0, sd = 0)
-    param_draws_MA$beta_sqrt_scup_keep = rnorm(10000, mean = 0.075, sd = 0.143)
-    param_draws_MA$beta_sqrt_scup_release = rnorm(10000, mean = 0, sd = 0)
-    param_draws_MA$beta_opt_out = rnorm(10000, mean = -2.641, sd = 2.554)
-    param_draws_MA$beta_striper_blue = rnorm(10000, mean = 1.429, sd = 1.920)
-    param_draws_MA$beta_cost = rnorm(10000, mean = -0.012, sd = 0)
+    param_draws_NY$beta_sqrt_sf_keep = rnorm(10000, mean = 0.559, sd = 0.678)
+    param_draws_NY$beta_sqrt_sf_release = rnorm(10000, mean = 0, sd = 0.336)
+    param_draws_NY$beta_sqrt_bsb_keep = rnorm(10000, mean = 0.275, sd = 0.261)
+    param_draws_NY$beta_sqrt_bsb_release = rnorm(10000, mean = 0, sd = 0)
+    param_draws_NY$beta_sqrt_scup_keep = rnorm(10000, mean = 0.075, sd = 0.143)
+    param_draws_NY$beta_sqrt_scup_release = rnorm(10000, mean = 0, sd = 0)
+    param_draws_NY$beta_opt_out = rnorm(10000, mean = -2.641, sd = 2.554)
+    param_draws_NY$beta_striper_blue = rnorm(10000, mean = 1.429, sd = 1.920)
+    param_draws_NY$beta_cost = rnorm(10000, mean = -0.012, sd = 0)
     
     
-    param_draws_MA$parameter_draw=d
+    param_draws_NY$parameter_draw=d
     
-    trip_data =  merge(param_draws_MA,trip_data,by="tripid")
+    trip_data =  merge(param_draws_NY,trip_data,by="tripid")
     
     
     #Expected utility
@@ -401,7 +401,7 @@ for(p in levels(periodz)){
     # and the sum of exponentiated expected utility across the three altenratives.
     # You will notice the striper_blue alternative has a large proabability based on the utility parameters
     mean_trip_data$prob0 = mean_trip_data$v0_row_sum/mean_trip_data$v0_col_sum
-
+    
     #subset the mean trip data by keeping the tripid, non-SF/BSB catch variables, cost, and expected utilities associated with each alternative. 
     #Will merge this information to the next simulation to calculate welfare changes
     mean_trip_data_s0=subset(mean_trip_data, select=c(tripid, period, alt, prob0, v0_col_sum, 
@@ -411,7 +411,7 @@ for(p in levels(periodz)){
                                                       beta_sqrt_scup_keep, beta_sqrt_scup_release, 
                                                       beta_cost, beta_striper_blue, beta_opt_out))
     mean_trip_data_s0$draw=d
-    utility_state0_MA[[p]]=mean_trip_data_s0
+    utility_state0_NY[[p]]=mean_trip_data_s0
     
     
     # Get rid of things we don't need. 
@@ -489,12 +489,12 @@ for(p in levels(periodz)){
 }
 
 
-pds_new_all_MA=list.stack(pds_new, fill=TRUE)
+pds_new_all_NY=list.stack(pds_new, fill=TRUE)
 
-pds_new_all_MA[is.na(pds_new_all_MA)] = 0
-pds_new_all_MA$state = state1
+pds_new_all_NY[is.na(pds_new_all_NY)] = 0
+pds_new_all_NY$state = state1
 
-utility_state0_MA_all=list.stack(utility_state0_MA, fill=TRUE)
+utility_state0_NY_all=list.stack(utility_state0_NY, fill=TRUE)
 
 
 
