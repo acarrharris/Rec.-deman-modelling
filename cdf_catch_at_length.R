@@ -40,3 +40,10 @@ write_xlsx(cdf_star,"cdf_star.xlsx")
 
 
 
+
+#Combine CDF* and Numbers at length cdf 
+cdf = data.frame(read_excel("C:/Users/andrew.carr-harris/Dropbox/NMFS/fluke_mse/simulation_R_code/cdf_star.xlsx"))   
+
+
+
+

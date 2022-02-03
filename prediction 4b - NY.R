@@ -16,7 +16,7 @@
 # 4) Set of utility parameters draws from one of the four surveys, for MA-NY states: utility_param_draws_MA_NY.xlsx
 
 
-state1="CT"
+state1="NY"
 region1="NO"
 
 

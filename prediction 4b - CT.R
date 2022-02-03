@@ -289,15 +289,17 @@ pds_all[is.na(pds_all)] = 0
 ##   End simulating trip outcomes   ##
 ######################################
 
+#set up an output file for each draw of utility parameters
+parameter_draws_CT = list()
 
 # Now calculate trip probabilities and utilities based on the multiple catch draws for each choice occasion
 pds_new = list()
-for(p in levels(periodz)){
+#for(p in levels(periodz)){
   
   
-  trip_data=subset(pds_all, period==p)
+  trip_data=subset(pds_all, period==10)
   
-  utility_zero=subset(utility_state0_CT_all, period==p, select=c(tripid, cost, tot_keep_scup, tot_rel_scup,
+  utility_zero=subset(utility_state0_CT_all, period==10, select=c(tripid, cost, tot_keep_scup, tot_rel_scup,
                                                                  beta_sqrt_sf_keep, beta_sqrt_sf_release,
                                                                  beta_sqrt_bsb_keep, beta_sqrt_bsb_release, 
                                                                  beta_sqrt_scup_keep, beta_sqrt_scup_release, 
@@ -308,10 +310,9 @@ for(p in levels(periodz)){
   trip_data[is.na(trip_data)] = 0
   
   
-  #set up an output file for each draw of utility parameters
-  parameter_draws_CT = list()
+
   
-  for(d in 1:1) {
+  #for(d in 1:1){
     ls(trip_data)
     
     #Expected utility
@@ -324,7 +325,7 @@ for(p in levels(periodz)){
       trip_data$beta_cost*trip_data$cost 
     
     trip_data$period=as.numeric(trip_data$period)
-    trip_data$parameter_draw=d
+    trip_data$parameter_draw=1
     
     # Collapse data from the X catch draws so that each row contains mean values
     mean_trip_data <-aggregate(trip_data, by=list(trip_data$tripid),FUN=mean, na.rm=TRUE)
@@ -429,11 +430,11 @@ for(p in levels(periodz)){
     
     aggregate_trip_data$sim = d
     
-    parameter_draws[[d]]=aggregate_trip_data
+    parameter_draws_CT[[d]]=aggregate_trip_data
     
   }
   
-  parameter_draws_all = as.data.frame(bind_rows(parameter_draws[[1]]))
+  parameter_draws_all = as.data.frame(bind_rows(parameter_draws_CT[[1]]))
   parameter_draws_all[is.na(parameter_draws_all)] = 0
   rownames(parameter_draws_all) = NULL
   
