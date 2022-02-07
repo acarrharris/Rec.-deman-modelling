@@ -3,6 +3,7 @@
 cdf = data.frame(read_excel("C:/Users/andrew.carr-harris/Dropbox/NMFS/fluke_mse/simulation_R_code/cdf_star.xlsx"))   
 
 X = cdf$l_in_bin
+X = log(X)
 Y = cdf$cdf_star
 
 # use nlm to find parameters that minimize the squared differences 
@@ -16,17 +17,15 @@ fn <- function(x) {
   sum((Y-pnorm(X,mu,sigma))^2)
 }
 est <- nlm(fn, c(1,1))$estimate
-curve(pnorm(x, est[1], exp(est[2])), add=T)
+cdf_fit <- data.frame(curve(pnorm(x, est[1], exp(est[2])), add=T))
+cdf_fit[,1] <- exp(cdf_fit[,1])
 
-
-cdf_fit <- data.frame(curve(pnorm(x, est[1], exp(est[2])), add=T,from=0, to=31, n=32))
-format(cdf_fit$y, scientific=F)
-cdf_fit$y[cdf_fit$x==19]
+format(cdf_fit$x, scientific=F)
 
 cdf_fit$ylag= lag(cdf_fit$y, n = 1L, default = NA)
 cdf_fit$prob= cdf_fit$y-cdf_fit$ylag
+cdf_fit[1,4]= cdf_fit[1,2]
 plot(cdf_fit$x,cdf_fit$prob)
-
 
 
 cdf_star = subset(cdf_fit, select = c(x, prob))
@@ -37,13 +36,4 @@ cdf_star[is.na(cdf_star)] = 0
 sum(cdf_star$fitted_prob )
 
 write_xlsx(cdf_star,"cdf_star.xlsx")
-
-
-
-
-#Combine CDF* and Numbers at length cdf 
-cdf = data.frame(read_excel("C:/Users/andrew.carr-harris/Dropbox/NMFS/fluke_mse/simulation_R_code/cdf_star.xlsx"))   
-
-
-
 

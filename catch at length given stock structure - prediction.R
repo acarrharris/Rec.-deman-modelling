@@ -53,7 +53,7 @@ numbers_at_length_new =  merge(selectivity,numbers_at_length,by="l_in_bin", all.
 numbers_at_length_new[is.na(numbers_at_length_new)] = 0
 numbers_at_length_new <-subset(numbers_at_length_new, N_l!=0 & region!=0)
 
-
+options(scipen = 999)
 # Create catch-at-length based on the new numbers-at-length
 numbers_at_length_new$q = as.numeric(numbers_at_length_new$q)
 numbers_at_length_new$C_l_new = (numbers_at_length_new$q)*(numbers_at_length_new$N_l)*(numbers_at_length_new$E)
@@ -89,6 +89,7 @@ tot_cat_predicted/tot_cat_base
 catch_expansion_factor_NO=tot_cat_NO_predicted/tot_cat_NO_base
 catch_expansion_factor_NJ=tot_cat_NJ_predicted/tot_cat_NJ_base
 catch_expansion_factor_SO=tot_cat_SO_predicted/tot_cat_SO_base
+
 
 
 
