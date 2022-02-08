@@ -1,10 +1,10 @@
 
 
-cdf = data.frame(read_excel("C:/Users/andrew.carr-harris/Dropbox/NMFS/fluke_mse/simulation_R_code/cdf_star.xlsx"))   
+cdf = data.frame(read_excel("C:/Users/andrew.carr-harris/Dropbox/NMFS/fluke_mse/simulation_R_code/coastwide_emp_cd_star.xlsx"))   
 
 X = cdf$l_in_bin
 X = log(X)
-Y = cdf$cdf_star
+Y = cdf$CDF_star
 
 # use nlm to find parameters that minimize the squared differences 
 # from your observed Y values and the expected for a normal distribution.
@@ -35,5 +35,5 @@ names(cdf_star)[names(cdf_star) == "prob"] = "fitted_prob"
 cdf_star[is.na(cdf_star)] = 0
 sum(cdf_star$fitted_prob )
 
-write_xlsx(cdf_star,"cdf_star.xlsx")
+write_xlsx(cdf_star,"cdf_star_coastwide.xlsx")
 
