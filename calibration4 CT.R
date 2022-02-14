@@ -102,6 +102,13 @@ for(p in levels(periodz)){
       sf_catch_data1= as.data.frame(sf_catch_data)  
       sf_catch_data1$uniform=runif(nrow(sf_catch_data1))
       sf_catch_data1$keep = ifelse(sf_catch_data1$uniform>=0.926, 1,0) 
+      
+      sf_catch_data1$csum_keep <- ave(sf_catch_data1$keep, sf_catch_data1$tripid, FUN=cumsum)
+      sf_catch_data1$keep_adj = ifelse(sf_catch_data1$csum_keep>fluke_bag, 0,sf_catch_data1$keep)
+      sf_catch_data1 <- subset(sf_catch_data1, select=-c(keep, csum_keep))
+      names(sf_catch_data1)[names(sf_catch_data1) == "keep_adj"] = "keep"
+      
+      
       sf_catch_data1$release = ifelse(sf_catch_data1$keep==0, 1,0) 
       
       sf_catch_data1=subset(sf_catch_data1, select=c(tripid, keep, release))
@@ -178,7 +185,13 @@ for(p in levels(periodz)){
       
       bsb_catch_data1= as.data.frame(bsb_catch_data)  
       bsb_catch_data1$uniform=runif(nrow(bsb_catch_data1))
-      bsb_catch_data1$keep = ifelse(bsb_catch_data1$uniform>=.77, 1,0) 
+      bsb_catch_data1$keep = ifelse(bsb_catch_data1$uniform>=.75, 1,0) 
+      
+      bsb_catch_data1$csum_keep <- ave(bsb_catch_data1$keep, bsb_catch_data1$tripid, FUN=cumsum)
+      bsb_catch_data1$keep_adj = ifelse(bsb_catch_data1$csum_keep>bsb_bag, 0,bsb_catch_data1$keep)
+      bsb_catch_data1 <- subset(bsb_catch_data1, select=-c(keep, csum_keep))
+      names(bsb_catch_data1)[names(bsb_catch_data1) == "keep_adj"] = "keep"
+      
       bsb_catch_data1$release = ifelse(bsb_catch_data1$keep==0, 1,0) 
       
       bsb_catch_data1=subset(bsb_catch_data1, select=c(tripid, keep, release))
@@ -270,7 +283,13 @@ for(p in levels(periodz)){
       
       scup_catch_data1= as.data.frame(scup_catch_data)  
       scup_catch_data1$uniform=runif(nrow(scup_catch_data1))
-      scup_catch_data1$keep = ifelse(scup_catch_data1$uniform>=0.05, 1,0) 
+      scup_catch_data1$keep = ifelse(scup_catch_data1$uniform>=0.03, 1,0) 
+      
+      scup_catch_data1$csum_keep <- ave(scup_catch_data1$keep, scup_catch_data1$tripid, FUN=cumsum)
+      scup_catch_data1$keep_adj = ifelse(scup_catch_data1$csum_keep>scup_bag, 0,scup_catch_data1$keep)
+      scup_catch_data1 <- subset(scup_catch_data1, select=-c(keep, csum_keep))
+      names(scup_catch_data1)[names(scup_catch_data1) == "keep_adj"] = "keep"
+      
       scup_catch_data1$release = ifelse(scup_catch_data1$keep==0, 1,0) 
       
       scup_catch_data1=subset(scup_catch_data1, select=c(tripid, keep, release))
