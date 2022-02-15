@@ -48,6 +48,10 @@ sum(numbers_at_length$N_l)
 # Import and merge the selectivity data to this file 
 selectivity = data.frame(read_excel("rec_selectivity_MRIP_ALS.xlsx"))
 selectivity <-subset(selectivity, select=c(l_in_bin, region, q, E, C_l))
+
+#selectivity = data.frame(read_excel("rec_selectivity_by_state_cdf_star.xlsx"))
+#selectivity <-subset(selectivity, select=c(l_in_bin, state, q, E, C_l))
+
 numbers_at_length_new =  merge(selectivity,numbers_at_length,by="l_in_bin", all.x=TRUE, all.y=TRUE)
 
 numbers_at_length_new[is.na(numbers_at_length_new)] = 0
@@ -58,14 +62,16 @@ options(scipen = 999)
 numbers_at_length_new$q = as.numeric(numbers_at_length_new$q)
 numbers_at_length_new$C_l_new = (numbers_at_length_new$q)*(numbers_at_length_new$N_l)*(numbers_at_length_new$E)
 sum(numbers_at_length_new$C_l_new)
+
+
 #write_xlsx(numbers_at_length_new,"numbers_at_length_new.xlsx")
 
-# subset the catch-at-length new datstet by region and fit gamma to the distirbution 
+#subset the catch-at-length new datstet by region and fit gamma to the distirbution
 numbers_at_length_NO <-subset(numbers_at_length_new, region=="NO", select=c(l_in_bin, C_l_new))
 numbers_at_length_NJ <-subset(numbers_at_length_new, region=="NJ", select=c(l_in_bin, C_l_new))
 numbers_at_length_SO <-subset(numbers_at_length_new, region=="SO", select=c(l_in_bin, C_l_new))
 
- 
+
 numbers_at_length_NO$C_l_new=round(numbers_at_length_NO$C_l_new)
 numbers_at_length_NJ$C_l_new=round(numbers_at_length_NJ$C_l_new)
 numbers_at_length_SO$C_l_new=round(numbers_at_length_SO$C_l_new)
@@ -89,7 +95,6 @@ tot_cat_predicted/tot_cat_base
 catch_expansion_factor_NO=tot_cat_NO_predicted/tot_cat_NO_base
 catch_expansion_factor_NJ=tot_cat_NJ_predicted/tot_cat_NJ_base
 catch_expansion_factor_SO=tot_cat_SO_predicted/tot_cat_SO_base
-
 
 
 

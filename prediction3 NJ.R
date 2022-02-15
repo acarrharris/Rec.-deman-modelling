@@ -95,7 +95,7 @@ for(p in levels(periodz)){
     
     #import and expand the population numbers-adjusted sf_size_data so that each row represents a fish
     size_data_sf = data.frame(read_excel("sf_fitted_sizes_y2plus.xlsx"))
-    size_data_sf = subset(size_data_sf, region==region1, select= c(fitted_length, fitted_prob))
+    size_data_sf = subset(size_data_sf, region==state1, select= c(fitted_length, fitted_prob))
     size_data_sf$nfish = round(100000 * size_data_sf$fitted_prob, digits=0)
     sum(size_data_sf$nfish)
     
@@ -215,7 +215,13 @@ for(p in levels(periodz)){
       
       bsb_catch_data1= as.data.frame(bsb_catch_data)  
       bsb_catch_data1$uniform=runif(nrow(bsb_catch_data1))
-      bsb_catch_data1$keep = ifelse(bsb_catch_data1$uniform>=0.93, 1,0) 
+      bsb_catch_data1$keep = ifelse(bsb_catch_data1$uniform>=0.92, 1,0) 
+      
+      bsb_catch_data1$csum_keep <- ave(bsb_catch_data1$keep, bsb_catch_data1$tripid, FUN=cumsum)
+      bsb_catch_data1$keep_adj = ifelse(bsb_catch_data1$csum_keep>bsb_bag, 0,bsb_catch_data1$keep)
+      bsb_catch_data1 <- subset(bsb_catch_data1, select=-c(keep, csum_keep))
+      names(bsb_catch_data1)[names(bsb_catch_data1) == "keep_adj"] = "keep"
+      
       bsb_catch_data1$release = ifelse(bsb_catch_data1$keep==0, 1,0) 
       
       bsb_catch_data1=subset(bsb_catch_data1, select=c(tripid, keep, release))

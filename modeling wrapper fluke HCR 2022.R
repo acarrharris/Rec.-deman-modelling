@@ -97,14 +97,16 @@ source("calibration4 NJ.R")
 source("calibration4 DE.R")
 source("calibration4 MD.R")
 source("calibration4 VA.R")
-source("calibration4 NC.R")
+#source("calibration4 NC.R")
 
 
-# Combine the results  
+# # Combine the results  
+# calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
+#                                                        pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
+#                                                        pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
 calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
                                                        pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
-                                                       pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
-
+                                                       pds_new_all_MD, pds_new_all_VA))
 #calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA))
 calibration_output_by_period[is.na(calibration_output_by_period)] = 0
 write_xlsx(calibration_output_by_period,"calibration_output_by_period.xlsx")
@@ -146,8 +148,9 @@ for (x in 1:1){
   ##########  
   # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
   # catch-at-length and catch-per-trip for summer flounder
-  source("CAL given stock structure - assessment coastwide - prediction.R")
+  #source("CAL given stock structure - assessment coastwide - prediction.R")
   #source("catch at length given stock structure - prediction.R")
+  source("CAL given stock structure by state.R")
   
   ##########  
   
@@ -165,12 +168,15 @@ for (x in 1:1){
   source("prediction3 DE.R")
   source("prediction3 MD.R")
   source("prediction3 VA.R")
-  source("prediction3 NC.R")
+  #source("prediction3 NC.R")
   
   
+  # prediction_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
+  #                                                       pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
+  #                                                       pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
   prediction_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
                                                         pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
-                                                        pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
+                                                        pds_new_all_MD, pds_new_all_VA))
   
   prediction_output_by_period[is.na(prediction_output_by_period)] = 0
   
