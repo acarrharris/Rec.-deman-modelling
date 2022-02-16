@@ -1,10 +1,10 @@
 #The following creates an cathc-per-trip dataset adjusted to reflect the population size
 
 ###Massachusetts
-catch_data <- read_excel("observed_catch_NO_19.xlsx")
-
-sf <- catch_data$sf_tot_cat
-bsb <- catch_data$bsb_tot_cat
+# catch_data <- read_excel("observed_catch_NO_19.xlsx")
+# 
+# sf <- catch_data$sf_tot_cat
+# bsb <- catch_data$bsb_tot_cat
 
 
 #estimate the nb parameters
@@ -96,10 +96,10 @@ write_xlsx(catch_data_sim, "predicted_catch_MA.xlsx")
 
 
 ###Rhode Island
-catch_data <- read_excel("observed_catch_NO_19.xlsx")
-
-sf <- catch_data$sf_tot_cat
-bsb <- catch_data$bsb_tot_cat
+# catch_data <- read_excel("observed_catch_NO_19.xlsx")
+# 
+# sf <- catch_data$sf_tot_cat
+# bsb <- catch_data$bsb_tot_cat
 
 
 #estimate the nb parameters
@@ -190,10 +190,10 @@ write_xlsx(catch_data_sim, "predicted_catch_RI.xlsx")
 
 
 ###Connecticut
-catch_data <- read_excel("observed_catch_NO_19.xlsx")
-
-sf <- catch_data$sf_tot_cat
-bsb <- catch_data$bsb_tot_cat
+# catch_data <- read_excel("observed_catch_NO_19.xlsx")
+# 
+# sf <- catch_data$sf_tot_cat
+# bsb <- catch_data$bsb_tot_cat
 
 
 #estimate the nb parameters
@@ -276,17 +276,17 @@ bsb_t_nb=sim_t_cop_nb[,2]
 
 mean(sf_t_nb)
 
-region="RI"
+region="CT"
 catch_data_sim=data.frame(sf_t_nb, bsb_t_nb, region)
 write_xlsx(catch_data_sim, "predicted_catch_CT.xlsx") 
 
 
 
 ###NEw York
-catch_data <- read_excel("observed_catch_NO_19.xlsx")
-
-sf <- catch_data$sf_tot_cat
-bsb <- catch_data$bsb_tot_cat
+# catch_data <- read_excel("observed_catch_NO_19.xlsx")
+# 
+# sf <- catch_data$sf_tot_cat
+# bsb <- catch_data$bsb_tot_cat
 
 
 #estimate the nb parameters
@@ -369,7 +369,7 @@ bsb_t_nb=sim_t_cop_nb[,2]
 
 mean(sf_t_nb)
 
-region="RI"
+region="NY"
 catch_data_sim=data.frame(sf_t_nb, bsb_t_nb, region)
 write_xlsx(catch_data_sim, "predicted_catch_NY.xlsx") 
 
@@ -377,10 +377,10 @@ write_xlsx(catch_data_sim, "predicted_catch_NY.xlsx")
 
 
 ###New Jersey
-catch_data <- read_excel("observed_catch_NJ_19.xlsx")
-
-sf <- catch_data$sf_tot_cat
-bsb <- catch_data$bsb_tot_cat
+# catch_data <- read_excel("observed_catch_NJ_19.xlsx")
+# 
+# sf <- catch_data$sf_tot_cat
+# bsb <- catch_data$bsb_tot_cat
 
 
 #estimate the nb parameters
@@ -470,10 +470,10 @@ write_xlsx(catch_data_sim, "predicted_catch_NJ.xlsx")
 
 
 ###Delaware
-catch_data <- read_excel("observed_catch_SO_19.xlsx")
-
-sf <- catch_data$sf_tot_cat
-bsb <- catch_data$bsb_tot_cat
+# catch_data <- read_excel("observed_catch_SO_19.xlsx")
+# 
+# sf <- catch_data$sf_tot_cat
+# bsb <- catch_data$bsb_tot_cat
 
 
 #estimate the nb parameters
@@ -563,10 +563,10 @@ write_xlsx(catch_data_sim, "predicted_catch_DE.xlsx")
 
 
 ###Maryland
-catch_data <- read_excel("observed_catch_SO_19.xlsx")
-
-sf <- catch_data$sf_tot_cat
-bsb <- catch_data$bsb_tot_cat
+# catch_data <- read_excel("observed_catch_SO_19.xlsx")
+# 
+# sf <- catch_data$sf_tot_cat
+# bsb <- catch_data$bsb_tot_cat
 
 
 #estimate the nb parameters
@@ -657,10 +657,10 @@ write_xlsx(catch_data_sim, "predicted_catch_MD.xlsx")
 
 
 ###Virginia
-catch_data <- read_excel("observed_catch_SO_19.xlsx")
-
-sf <- catch_data$sf_tot_cat
-bsb <- catch_data$bsb_tot_cat
+# catch_data <- read_excel("observed_catch_SO_19.xlsx")
+# 
+# sf <- catch_data$sf_tot_cat
+# bsb <- catch_data$bsb_tot_cat
 
 
 #estimate the nb parameters

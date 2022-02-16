@@ -26,7 +26,7 @@ calibration_data = subset(calibration_data, state == state1, select=c(period, si
 
 
 # Input the data set containing alterntative regulations and directed trips (directed_trips_region - alternative regs test.xlsx)
-directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_HCR_minus1.xlsx"))                                                                            
+directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_test.xlsx"))                                                                            
 directed_trips$dtrip=round(directed_trips$dtrip_2019)
 directed_trips= subset(directed_trips, state == state1)
 
@@ -62,7 +62,7 @@ for(p in levels(periodz)){
   for(i in 1:10) {
     
     # Input catch-per-trip numbers 
-    sf_catch_data = data.frame(read_excel("predicted_catch_SO.xlsx"))                                                                            
+    sf_catch_data = data.frame(read_excel("predicted_catch_DE.xlsx"))                                                                            
     tot_sf_catch = sf_catch_data$sf_t_nb
     tot_bsb_catch = sf_catch_data$bsb_t_nb
     sf_catch_data = data.frame(tot_sf_catch,tot_bsb_catch)
@@ -322,7 +322,7 @@ for(p in levels(periodz)){
   for(d in 1:1) {
     
     # Use the previously drawn set of utility parameters to calculate expected utility, welfare, and effort in the prediction year
-    param_draws_DE_prediction = subset(param_draws_DE, parameter_draw=i)
+    param_draws_DE_prediction = subset(param_draws_DE, parameter_draw==d)
     trip_data =  merge(param_draws_DE_prediction,trip_data,by="tripid")
     
     
@@ -359,11 +359,10 @@ for(p in levels(periodz)){
     mean_trip_data$opt_out = ifelse(mean_trip_data$alt!=1 & mean_trip_data$alt!=2, 1,0) 
     mean_trip_data$striper_blue = ifelse(mean_trip_data$alt!=1 & mean_trip_data$alt!=3, 1,0) 
     
-    
     #Caluculate the expected utility of alts 2 and 3 based on the parameters of the utility function
     #These will be the same for both v0 and v1
     mean_trip_data$vA_optout= mean_trip_data$beta_opt_out*mean_trip_data$opt_out 
-    mean_trip_data$vA_striper_blue= mean_trip_data$beta_striper_blue*mean_trip_data$striper_blue 
+    mean_trip_data$vA_striper_blue= mean_trip_data$beta_striper_blue*mean_trip_data$striper_blue  
     
     #Now put these three values in the same column, exponentiate, and caluculate their sum (vA_col_sum)
     mean_trip_data$vA[mean_trip_data$alt!=1] <- 0
@@ -391,7 +390,7 @@ for(p in levels(periodz)){
     
     # Get rid of things we don't need. 
     mean_trip_data = subset(mean_trip_data, alt==1, select=-c(alt, opt_out, striper_blue, vA_optout, vA_striper_blue, vA_row_sum, vA_col_sum, v0_row_sum, v0_col_sum,
-                                                              beta_cost, beta_striper_blue, beta_opt_out,
+                                                              beta_cost, beta_striper_blue, beta_opt_out, 
                                                               beta_sqrt_bsb_release, beta_sqrt_bsb_keep, beta_sqrt_sf_release, beta_sqrt_sf_keep, 
                                                               beta_sqrt_wf_release, beta_sqrt_wf_keep))
     

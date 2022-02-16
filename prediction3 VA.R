@@ -26,7 +26,7 @@ calibration_data = subset(calibration_data, state == state1, select=c(period, si
 
 
 # Input the data set containing alterntative regulations and directed trips (directed_trips_region - alternative regs test.xlsx)
-directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_HCR_minus1.xlsx"))                                                                            
+directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_test.xlsx"))                                                                            
 directed_trips$dtrip=round(directed_trips$dtrip_2019)
 directed_trips= subset(directed_trips, state == state1)
 
@@ -67,7 +67,7 @@ for(p in levels(periodz)){
   for(i in 1:10) {
     
     # Input catch-per-trip numbers 
-    sf_catch_data = data.frame(read_excel("predicted_catch_SO.xlsx"))                                                                            
+    sf_catch_data = data.frame(read_excel("predicted_catch_VA.xlsx"))                                                                            
     tot_sf_catch = sf_catch_data$sf_t_nb
     tot_bsb_catch = sf_catch_data$bsb_t_nb
     sf_catch_data = data.frame(tot_sf_catch,tot_bsb_catch)
@@ -329,7 +329,7 @@ for(p in levels(periodz)){
   for(d in 1:1) {
     
     # Use the previously drawn set of utility parameters to calculate expected utility, welfare, and effort in the prediction year
-    param_draws_VA_prediction = subset(param_draws_VA, parameter_draw=i)
+    param_draws_VA_prediction = subset(param_draws_VA, parameter_draw==d)
     trip_data =  merge(param_draws_VA_prediction,trip_data,by="tripid")
     
     

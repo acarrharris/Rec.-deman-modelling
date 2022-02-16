@@ -103,7 +103,7 @@ for(p in levels(periodz)){
       
       sf_catch_data1= as.data.frame(sf_catch_data)  
       sf_catch_data1$uniform=runif(nrow(sf_catch_data1))
-      sf_catch_data1$keep = ifelse(sf_catch_data1$uniform>=0.895, 1,0) 
+      sf_catch_data1$keep = ifelse(sf_catch_data1$uniform>=0.891, 1,0) 
       
       sf_catch_data1$csum_keep <- ave(sf_catch_data1$keep, sf_catch_data1$tripid, FUN=cumsum)
       sf_catch_data1$keep_adj = ifelse(sf_catch_data1$csum_keep>fluke_bag, 0,sf_catch_data1$keep)
@@ -289,7 +289,7 @@ for(p in levels(periodz)){
       
       wf_catch_data1= as.data.frame(wf_catch_data)  
       wf_catch_data1$uniform=runif(nrow(wf_catch_data1))
-      wf_catch_data1$keep = ifelse(wf_catch_data1$uniform>=.88, 1,0)
+      wf_catch_data1$keep = ifelse(wf_catch_data1$uniform>=.85, 1,0)
       
       wf_catch_data1$csum_keep <- ave(wf_catch_data1$keep, wf_catch_data1$tripid, FUN=cumsum)
       wf_catch_data1$keep_adj = ifelse(wf_catch_data1$csum_keep>wf_bag, 0,wf_catch_data1$keep)

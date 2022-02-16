@@ -86,6 +86,14 @@ library(stats)
 ptm <- proc.time()
 
 
+
+##########
+# Estimate the catch-per-trip copulas so we don't re-estimate every time
+source("calc_catch_per_trip_copulas.R")
+##########
+
+
+
 ########## 
 # 1) Run the calibration files
 
@@ -134,10 +142,7 @@ calibration_catch_at_length= subset(assment_CAL, select=c(l_in_bin, calibration_
 
 
 
-##########
-# Estimate the catch-per-trip copulas so we don't re-estimate every time
-source("calc_catch_per_trip_copulas.R")
-##########
+
 
 
 

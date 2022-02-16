@@ -281,7 +281,7 @@ for(p in levels(periodz)){
       
       scup_catch_data1= as.data.frame(scup_catch_data)  
       scup_catch_data1$uniform=runif(nrow(scup_catch_data1))
-      scup_catch_data1$keep = ifelse(scup_catch_data1$uniform>=0.88, 1,0) 
+      scup_catch_data1$keep = ifelse(scup_catch_data1$uniform>=.853, 1,0) 
       
       
       scup_catch_data1$csum_keep <- ave(scup_catch_data1$keep, scup_catch_data1$tripid, FUN=cumsum)

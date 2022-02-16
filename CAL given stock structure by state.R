@@ -49,7 +49,7 @@ sum(numbers_at_length$N_l)
 #selectivity = data.frame(read_excel("rec_selectivity_MRIP_ALS.xlsx"))
 #selectivity <-subset(selectivity, select=c(l_in_bin, region, q, E, C_l))
 
-selectivity = data.frame(read_excel("rec_selectivity_by_state_cdf_star.xlsx"))
+selectivity = data.frame(read_excel("rec_selectivity_by_state_cdf_star_raw.xlsx"))
 selectivity <-subset(selectivity, select=c(l_in_bin, state, q, E, C_l))
 
 numbers_at_length_new =  merge(selectivity,numbers_at_length,by="l_in_bin", all.x=TRUE, all.y=TRUE)
@@ -108,14 +108,14 @@ tot_cat_VA_base=sum(subset(selectivity, state == "VA")$C_l)
 
 
 #Create a factor that expands total catch in the prediction year
-catch_expansion_factor_MA=tot_cat_MA_predicted/tot_cat_MA_base
-catch_expansion_factor_RI=tot_cat_RI_predicted/tot_cat_RI_base
-catch_expansion_factor_CT=tot_cat_CT_predicted/tot_cat_CT_base
-catch_expansion_factor_NY=tot_cat_NY_predicted/tot_cat_NY_base
-catch_expansion_factor_NJ=tot_cat_NJ_predicted/tot_cat_NJ_base
-catch_expansion_factor_DE=tot_cat_DE_predicted/tot_cat_DE_base
-catch_expansion_factor_MD=tot_cat_MD_predicted/tot_cat_MD_base
-catch_expansion_factor_VA=tot_cat_VA_predicted/tot_cat_VA_base
+catch_expansion_factor_MA=round(tot_cat_MA_predicted/tot_cat_MA_base, digits=4)
+catch_expansion_factor_RI=round(tot_cat_RI_predicted/tot_cat_RI_base, digits=4)
+catch_expansion_factor_CT=round(tot_cat_CT_predicted/tot_cat_CT_base, digits=4)
+catch_expansion_factor_NY=round(tot_cat_NY_predicted/tot_cat_NY_base, digits=4)
+catch_expansion_factor_NJ=round(tot_cat_NJ_predicted/tot_cat_NJ_base, digits=4)
+catch_expansion_factor_DE=round(tot_cat_DE_predicted/tot_cat_DE_base, digits=4)
+catch_expansion_factor_MD=round(tot_cat_MD_predicted/tot_cat_MD_base, digits=4)
+catch_expansion_factor_VA=round(tot_cat_VA_predicted/tot_cat_VA_base, digits=4)
 
 ##########
 # Here, execute the catch-per trip file. 
