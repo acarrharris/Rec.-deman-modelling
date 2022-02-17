@@ -162,7 +162,7 @@ for (x in 1:1){
   
   
   ##########  
-  # run the simulation code under the new set of regulations (regulatiopn file is directed_trips_region - alternative regs test.xlsx)
+  # run the simulation code under the new set of regulations (regulation file is directed_trips_region - alternative regs test.xlsx)
   
   
   source("prediction3 MA.R")
