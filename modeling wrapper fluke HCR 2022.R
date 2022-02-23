@@ -136,6 +136,7 @@ assment_CAL$calibration_keep_at_length=assment_CAL$ab1_prop*tot_sf_keep
 assment_CAL$calibration_release_at_length=assment_CAL$b2_prop*tot_sf_rel
 
 calibration_catch_at_length= subset(assment_CAL, select=c(l_in_bin, calibration_keep_at_length, calibration_release_at_length))
+write_xlsx(calibration_catch_at_length,"calibration_catch_at_length.xlsx")
 
 ##########  
 
@@ -185,11 +186,13 @@ for (x in 1:1){
   
   prediction_output_by_period[is.na(prediction_output_by_period)] = 0
   
+
   
-  state_prediction_output= subset(prediction_output_by_period, select=c(tot_keep, tot_rel,tot_keep_bsb, tot_rel_bsb,tot_keep_scup, tot_rel_scup,
-                                                                        tot_keep_wf, tot_rel_wf, tot_keep_rd, tot_rel_rd, observed_trips,
-                                                                        n_choice_occasions, period, state, change_CS ))
-  
+  # state_prediction_output= subset(prediction_output_by_period, select=c(tot_keep, tot_rel,tot_keep_bsb, tot_rel_bsb,tot_keep_scup, tot_rel_scup,
+  #                                                                       tot_keep_wf, tot_rel_wf, tot_keep_rd, tot_rel_rd, observed_trips,
+  #                                                                       n_choice_occasions, period, state, change_CS))
+  state_prediction_output=prediction_output_by_period
+
   
   state_prediction_output$state1=with(state_prediction_output, match(state, unique(state)))
   state_prediction_output1= subset(state_prediction_output, select=-c(state, period))

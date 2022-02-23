@@ -26,7 +26,7 @@ calibration_data = subset(calibration_data, state == state1, select=c(period, si
 
 
 # Input the data set containing alterntative regulations and directed trips (directed_trips_region - alternative regs test.xlsx)
-directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_HCR_minus1.xlsx"))                                                                            
+directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_HCR_plus1.xlsx"))                                                                            
 directed_trips$dtrip=round(directed_trips$dtrip_2019)
 directed_trips= subset(directed_trips, state == state1)
 

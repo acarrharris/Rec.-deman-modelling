@@ -19,11 +19,11 @@ age_length_key = data.frame(read_excel("com_sv_len_age_adj_2018.xlsx"))
 # THIS IS WHERE TO IMPORT THE NUMBERS AT AGE FROM THE OPERATING MODEL
 #numbers_at_age = data.frame(read_excel("numbers_at_age_2018.xlsx"))
 
-numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_sample100.xlsx"))
+#numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_sample100.xlsx"))
 #numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==x)
-#numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
+numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
+#numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_median.xlsx"))
 
-numbers_at_age = aggregate(Na ~ age, data=numbers_at_age, FUN=median)
 
 # Merge the two above datasets and create population numbers-at-length (inches)
 numbers_at_length =  merge(age_length_key,numbers_at_age,by="age", all.x=TRUE, all.y=TRUE)
@@ -42,7 +42,7 @@ names(numbers_at_length)[names(numbers_at_length) == "Group.1"] = "l_in_bin"
 
 
 #Translate numbers from 1,000's of fish
-#numbers_at_length$N_l=numbers_at_length$N_l*1000
+numbers_at_length$N_l=numbers_at_length$N_l*1000
 sum(numbers_at_length$N_l)
 
 
@@ -117,6 +117,9 @@ catch_expansion_factor_NJ=round(tot_cat_NJ_predicted/tot_cat_NJ_base, digits=4)
 catch_expansion_factor_DE=round(tot_cat_DE_predicted/tot_cat_DE_base, digits=4)
 catch_expansion_factor_MD=round(tot_cat_MD_predicted/tot_cat_MD_base, digits=4)
 catch_expansion_factor_VA=round(tot_cat_VA_predicted/tot_cat_VA_base, digits=4)
+
+sum(numbers_at_length_new$C_l)
+sum(numbers_at_length_new$C_l_new)
 
 ##########
 # Here, execute the catch-per trip file. 
