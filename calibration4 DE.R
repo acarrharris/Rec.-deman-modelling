@@ -3,16 +3,14 @@
 # There are several pieces of information that vary by state or regions:
 #     By state: trip costs, percent of trips taken by each mode (used for assigning trip costs), 
 #               and regulations (which also vary within a a season for a given state)
-#     By region (MA-NY, NJ, DE-NC): catch-per-trip and catch-at-length distributions
+#     By state or region (MA-NY, NJ, DE-NC): sf catch-per-trip and catch-at-length distributions
 #     By region (MA-NY, NJ, DE-MD, VA-NC): utility parameters and target species 
 
 # This code requires the following data:
-# 1) Directed summer flounder by regualtory period in the baseline year: directed_trips_region.xlsx
+# 1) Directed summer flounder by regulatory period in the baseline year: directed_trips_region_XX.xlsx
 # 2) Distribution of trip costs by mode in each state: trip_costs_NE.xlsx
-# 3) Catch-per-trip of SF and BSB from the copula model: MANY_catch_data_sim1.xlsx
-# 4) Catch-at-length for each of the species included in the models: fitted_sizes_region_raw.xlsx
-# 5) Catch-per-trip of species other than SF and BSB: other_species_fitted_catch.xlsx
-# 6) Set of utility parameters draws from one of the four surveys, for MA-NY states: utility_param_draws_MA_NY.xlsx
+# 3) Catch-per-trip of SF and BSB from the copula model: XX_catch_data_sim1.xlsx
+# 4) Catch-per-trip of species other than SF and BSB: other_species_fitted_catch.xlsx
 
 state1="DE"
 region1="SO"
@@ -132,8 +130,7 @@ for(p in levels(periodz)){
       names(sf_catch_data1)[names(sf_catch_data1) == "release"] = "tot_rel"
       
     }
-    #import and expand the sf_size_data so that each row represents a fish
-    size_data = data.frame(read_excel("fitted_sizes_region_raw.xlsx"))
+
     
     
     trip_data =  as.data.frame(sf_catch_data1)

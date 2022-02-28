@@ -112,12 +112,13 @@ source("calibration4 VA.R")
 # calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
 #                                                        pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
 #                                                        pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
+
+
 calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
                                                        pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
                                                        pds_new_all_MD, pds_new_all_VA))
 
-calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_NJ))
-#calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA))
+
 calibration_output_by_period[is.na(calibration_output_by_period)] = 0
 write_xlsx(calibration_output_by_period,"calibration_output_by_period.xlsx")
 
@@ -151,7 +152,7 @@ write_xlsx(aggregate_calibration_output,"aggregate_calibration_output.xlsx")
 
 
 state_output = data.frame()
-#for (x in 1:1){
+for (x in 1:1){
   
   ##########  
   # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
@@ -168,6 +169,10 @@ state_output = data.frame()
   # run the simulation code under the new set of regulations (regulation file is directed_trips_region - alternative regs test.xlsx)
   
   
+  directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_HCR_minus2.xlsx"))
+  directed_trip_alt_regs$dtrip_2019=round(directed_trip_alt_regs$dtrip_2019)
+
+
   source("prediction3 MA.R")
   source("prediction3 RI.R")
   source("prediction3 CT.R")
