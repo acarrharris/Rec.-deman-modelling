@@ -606,6 +606,7 @@ for(p in levels(periodz)){
     sims = round(observed_trips/mean_prob)
     ndraws = nrow(mean_trip_data)
     expand=sims/ndraws
+    mean_trip_data$n_choice_occasions=1
     
     list_names = colnames(mean_trip_data)[colnames(mean_trip_data) !="Group.1" & colnames(mean_trip_data) !="tripid" 
                                           & colnames(mean_trip_data) !="catch_draw" & colnames(mean_trip_data) !="period"
@@ -615,19 +616,13 @@ for(p in levels(periodz)){
       mean_trip_data[,l] = mean_trip_data[,l]*expand
     }
     
-    
-    #This should equal the observed # of trips in that period
-    sum(mean_trip_data$probA)
-    
-    
+
     
     mean_trip_data$sim=1
     
     #sum probability weighted catch over all choice occasions
     aggregate_trip_data <-aggregate(mean_trip_data, by=list(mean_trip_data$sim),FUN=sum, na.rm=TRUE)
-    aggregate_trip_data$n_choice_occasions = sims
-    
-    
+
     aggregate_trip_data = subset(aggregate_trip_data, select=-c(Group.1, tripid, catch_draw, period, cost, vA ,sim))
     names(aggregate_trip_data)[names(aggregate_trip_data) == "probA"] = "observed_trips"
     

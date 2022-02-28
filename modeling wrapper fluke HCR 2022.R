@@ -115,6 +115,8 @@ source("calibration4 VA.R")
 calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
                                                        pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
                                                        pds_new_all_MD, pds_new_all_VA))
+
+calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_NJ))
 #calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA))
 calibration_output_by_period[is.na(calibration_output_by_period)] = 0
 write_xlsx(calibration_output_by_period,"calibration_output_by_period.xlsx")
@@ -127,16 +129,16 @@ write_xlsx(aggregate_calibration_output,"aggregate_calibration_output.xlsx")
 
 
 #Apply the calibration estimates of total catch to the catch-at-length distribution used in the assessment 
-tot_sf_keep = aggregate_calibration_output$tot_keep
-tot_sf_rel = aggregate_calibration_output$tot_rel
-tot_sf_catch = tot_sf_keep+tot_sf_rel
-
-assment_CAL = data.frame(read_excel("assessment_catch_at_length.xlsx"))                                                                            
-assment_CAL$calibration_keep_at_length=assment_CAL$ab1_prop*tot_sf_keep
-assment_CAL$calibration_release_at_length=assment_CAL$b2_prop*tot_sf_rel
-
-calibration_catch_at_length= subset(assment_CAL, select=c(l_in_bin, calibration_keep_at_length, calibration_release_at_length))
-write_xlsx(calibration_catch_at_length,"calibration_catch_at_length.xlsx")
+# tot_sf_keep = aggregate_calibration_output$tot_keep
+# tot_sf_rel = aggregate_calibration_output$tot_rel
+# tot_sf_catch = tot_sf_keep+tot_sf_rel
+# 
+# assment_CAL = data.frame(read_excel("assessment_catch_at_length.xlsx"))                                                                            
+# assment_CAL$calibration_keep_at_length=assment_CAL$ab1_prop*tot_sf_keep
+# assment_CAL$calibration_release_at_length=assment_CAL$b2_prop*tot_sf_rel
+# 
+# calibration_catch_at_length= subset(assment_CAL, select=c(l_in_bin, calibration_keep_at_length, calibration_release_at_length))
+# write_xlsx(calibration_catch_at_length,"calibration_catch_at_length.xlsx")
 
 ##########  
 
@@ -149,7 +151,7 @@ write_xlsx(calibration_catch_at_length,"calibration_catch_at_length.xlsx")
 
 
 state_output = data.frame()
-for (x in 1:1){
+#for (x in 1:1){
   
   ##########  
   # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
@@ -185,6 +187,7 @@ for (x in 1:1){
                                                         pds_new_all_MD, pds_new_all_VA))
   
   prediction_output_by_period[is.na(prediction_output_by_period)] = 0
+  write_xlsx(prediction_output_by_period,"prediction_output_by_period.xlsx")
   
 
   

@@ -50,7 +50,7 @@ sum(numbers_at_length$N_l)
 #selectivity = data.frame(read_excel("rec_selectivity_MRIP_ALS.xlsx"))
 #selectivity <-subset(selectivity, select=c(l_in_bin, region, q, E, C_l))
 
-selectivity = data.frame(read_excel("rec_selectivity_by_state_cdf_star_raw.xlsx"))
+selectivity = data.frame(read_excel("rec_selectivity_by_state_cdf_star_raw_18_19.xlsx"))
 selectivity <-subset(selectivity, select=c(l_in_bin, state, q, E, C_l))
 
 numbers_at_length_new =  merge(selectivity,numbers_at_length,by="l_in_bin", all.x=TRUE, all.y=TRUE)
