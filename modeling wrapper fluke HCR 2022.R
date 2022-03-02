@@ -169,7 +169,7 @@ for (x in 1:1){
   # run the simulation code under the new set of regulations (regulation file is directed_trips_region - alternative regs test.xlsx)
   
   
-  directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_HCR_minus2.xlsx"))
+  directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly.xlsx"))
   directed_trip_alt_regs$dtrip_2019=round(directed_trip_alt_regs$dtrip_2019)
 
 
