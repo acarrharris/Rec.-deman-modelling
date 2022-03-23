@@ -18,17 +18,22 @@
 #           selectivity and projected population abundances at length. 
 
 
+
 state1="MA"
 region1="NO"
 
 
 # Input the calibration output which contains the number of choice occasions needed to simulate
-calibration_data = data.frame(read_excel("calibration_output_by_period.xlsx"))
-calibration_data = subset(calibration_data, state == state1, select=c(period, sim, state, n_choice_occasions))
+#calibration_data = data.frame(read_excel("calibration_output_by_period.xlsx"))
+#calibration_data = subset(calibration_data, state == state1, select=c(period, sim, state, n_choice_occasions))
+
+calibration_data <- data.frame(read_excel("calibration_output_by_period.xlsx")) %>%
+                    filter(state == state1) %>%
+                    select(period, sim, state, n_choice_occasions)
 
 
 # Input the data set containing alterntative regulations and directed trips
-directed_trips= subset(directed_trip_alt_regs, state == state1)
+directed_trips <- subset(directed_trip_alt_regs, state == state1)
 
 min_period=min(directed_trips$period)
 max_period=max(directed_trips$period)
@@ -108,6 +113,14 @@ for(p in levels(periodz)){
       
       sf_catch_data1$csum_keep <- ave(sf_catch_data1$keep, sf_catch_data1$tripid, FUN=cumsum)
       sf_catch_data1$keep_adj = ifelse(sf_catch_data1$csum_keep>fluke_bag, 0,sf_catch_data1$keep)
+      
+      #Add the following lines to end the trip once the bag limit is reached (rather than continuing to discard)
+      ###
+      sf_catch_data1$post_bag_fish=ifelse(sf_catch_data1$csum_keep>fluke_bag, 1,0)
+      sf_catch_data1= subset(sf_catch_data1,post_bag_fish==0 )
+      sf_catch_data1 <- subset(sf_catch_data1, select=-c(post_bag_fish ))
+      ###
+      
       sf_catch_data1 <- subset(sf_catch_data1, select=-c(keep, csum_keep))
       names(sf_catch_data1)[names(sf_catch_data1) == "keep_adj"] = "keep"
       
@@ -115,7 +128,7 @@ for(p in levels(periodz)){
       sf_catch_data1$release = ifelse(sf_catch_data1$keep==0, 1,0) 
       
       sf_catch_data1=subset(sf_catch_data1, select=c(tripid, keep, release))
-      sf_catch_data1 <-aggregate(sf_catch_data1, by=list(sf_catch_data$tripid),FUN=sum, na.rm=TRUE)
+      sf_catch_data1 <-aggregate(sf_catch_data1, by=list(sf_catch_data1$tripid),FUN=sum, na.rm=TRUE)
       sf_catch_data1 <-subset(sf_catch_data1, select=c(Group.1, keep, release))
       names(sf_catch_data1)[names(sf_catch_data1) == "Group.1"] = "tripid"
       names(sf_catch_data1)[names(sf_catch_data1) == "keep"] = "tot_keep"

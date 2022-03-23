@@ -51,6 +51,7 @@ install.packages("xlsx")
 install.packages("writexl")
 install.packages("logspline")
 install.packages("xtable")
+install.packages("devtools")
 
 library(psych)
 library(rgl)
@@ -105,18 +106,18 @@ source("calibration4 NJ.R")
 source("calibration4 DE.R")
 source("calibration4 MD.R")
 source("calibration4 VA.R")
-#source("calibration4 NC.R")
+source("calibration4 NC.R")
 
 
-# # Combine the results  
-# calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
-#                                                        pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
-#                                                        pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
-
-
+# Combine the results
 calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
                                                        pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
-                                                       pds_new_all_MD, pds_new_all_VA))
+                                                       pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
+
+
+# calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
+#                                                        pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
+#                                                        pds_new_all_MD, pds_new_all_VA))
 
 
 calibration_output_by_period[is.na(calibration_output_by_period)] = 0
@@ -143,22 +144,40 @@ write_xlsx(aggregate_calibration_output,"aggregate_calibration_output.xlsx")
 
 ##########  
 
+regs <- c("plus1", "minus1", "minus2", "plus1_bag2", "minus1_bag2", "minus2_bag2")
+regs <- c("minus1")
 
-
-
-
-
-
+for (r in regs){
+  regulation=r
 
 
 state_output = data.frame()
-for (x in 1:1){
+#for (x in 1:1){
   
   ##########  
   # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
   # catch-at-length and catch-per-trip for summer flounder
   #source("CAL given stock structure - assessment coastwide - prediction.R")
   #source("catch at length given stock structure - prediction.R")
+  
+  # THIS IS WHERE TO IMPORT THE NUMBERS AT AGE FROM THE OPERATING MODEL
+  #2018 numbers (median)
+  # numbers_at_age = data.frame(read_excel("numbers_at_age_2018.xlsx"))
+  # numbers_at_age$Na=numbers_at_age$Na*1000
+  
+  #2019 numbers (median)
+  # numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
+  # numbers_at_age$Na=numbers_at_age$Na*1000
+  
+  #2022 numbers (median)
+  numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_median.xlsx"))
+  
+  #2022 numbers (draw from a sample of 100) - use this to incorporate uncertainty 
+  # numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_sample100.xlsx"))
+  # numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==x)
+  
+
+  
   source("CAL given stock structure by state.R")
   
   ##########  
@@ -168,8 +187,7 @@ for (x in 1:1){
   ##########  
   # run the simulation code under the new set of regulations (regulation file is directed_trips_region - alternative regs test.xlsx)
   
-  
-  directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly.xlsx"))
+  directed_trip_alt_regs=data.frame(read_excel(paste0("directed_trips_regions_bimonthly_HCR_",regulation,".xlsx")))
   directed_trip_alt_regs$dtrip_2019=round(directed_trip_alt_regs$dtrip_2019)
 
 
@@ -181,15 +199,15 @@ for (x in 1:1){
   source("prediction3 DE.R")
   source("prediction3 MD.R")
   source("prediction3 VA.R")
-  #source("prediction3 NC.R")
+  source("prediction3 NC.R")
   
-  
-  # prediction_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
-  #                                                       pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
-  #                                                       pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
+
   prediction_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
                                                         pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
-                                                        pds_new_all_MD, pds_new_all_VA))
+                                                        pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
+  # prediction_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
+  #                                                       pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
+  #                                                       pds_new_all_MD, pds_new_all_VA))
   
   prediction_output_by_period[is.na(prediction_output_by_period)] = 0
   write_xlsx(prediction_output_by_period,"prediction_output_by_period.xlsx")
@@ -217,11 +235,12 @@ for (x in 1:1){
   
   
   state_output =rbind(state_output, state_prediction_output1)
-  
+  state_output$reg=regulation
+}
+write_xlsx(state_output,paste0("state_output_nostop_",regulation,".xlsx"))
+
 }
 
-
-write_xlsx(state_output,"state_output.xlsx")
 
 #aggregate_prediction_output= subset(prediction_output_by_period, select=-c(state, alt_regs, period))
 #aggregate_prediction_output = aggregate(aggregate_prediction_output, by=list(aggregate_prediction_output$sim),FUN=sum, na.rm=TRUE)
@@ -237,6 +256,6 @@ proc.time() - ptm
 
 ###
 # Calculate ouput statisitics for calibration and prediction year
-source("simulation output stats.R")
+#source("simulation output stats.R")
 
 

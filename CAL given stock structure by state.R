@@ -12,30 +12,30 @@
 
 
 # Import the 2018 ALK (in centimeters) provided by M. Terceiro
-# age_length_key = data.frame(read_excel("com_sv_len_age_adj_2018.xlsx"))                                                                            
-# 
-# 
-# #import a test numbers-at-age dataset
-# # THIS IS WHERE TO IMPORT THE NUMBERS AT AGE FROM THE OPERATING MODEL
-# #numbers_at_age = data.frame(read_excel("numbers_at_age_2018.xlsx"))
-# 
-# #numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_sample100.xlsx"))
-# #numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==x)
-# numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
-# #numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_median.xlsx"))
-# 
-# 
-# # Merge the two above datasets and create population numbers-at-length (inches)
-# numbers_at_length =  merge(age_length_key,numbers_at_age,by="age", all.x=TRUE, all.y=TRUE)
-# numbers_at_length$N_l = numbers_at_length$proportion*numbers_at_length$Na
-# 
-# numbers_at_length = aggregate(numbers_at_length, by=list(numbers_at_length$l_in_bin),FUN=sum, na.rm=TRUE)
-# numbers_at_length <-subset(numbers_at_length, select=c(Group.1,N_l))
-# names(numbers_at_length)[names(numbers_at_length) == "Group.1"] = "l_in_bin"
+age_length_key = data.frame(read_excel("com_sv_len_age_adj_2018.xlsx"))
 
 
-numbers_at_length <- tibble(l_in_bin = lenbinuse,
-                            N_l = om_length_in[1,])
+#import a test numbers-at-age dataset
+# THIS IS WHERE TO IMPORT THE NUMBERS AT AGE FROM THE OPERATING MODEL
+#numbers_at_age = data.frame(read_excel("numbers_at_age_2018.xlsx"))
+
+#numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_sample100.xlsx"))
+#numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==x)
+#numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
+#numbers_at_age$Na=numbers_at_age$Na*1000
+
+#numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_median.xlsx"))
+
+
+# Merge the two above datasets and create population numbers-at-length (inches)
+numbers_at_length =  merge(age_length_key,numbers_at_age,by="age", all.x=TRUE, all.y=TRUE)
+numbers_at_length$N_l = numbers_at_length$proportion*numbers_at_length$Na
+
+numbers_at_length = aggregate(numbers_at_length, by=list(numbers_at_length$l_in_bin),FUN=sum, na.rm=TRUE)
+numbers_at_length <-subset(numbers_at_length, select=c(Group.1,N_l))
+names(numbers_at_length)[names(numbers_at_length) == "Group.1"] = "l_in_bin"
+
+
 
 
 # Translate cms's to inches 
@@ -46,7 +46,7 @@ names(numbers_at_length)[names(numbers_at_length) == "Group.1"] = "l_in_bin"
 
 
 #Translate numbers from 1,000's of fish
-numbers_at_length$N_l=numbers_at_length$N_l*1000
+#numbers_at_length$N_l=numbers_at_length$N_l*1000
 sum(numbers_at_length$N_l)
 
 
@@ -75,6 +75,7 @@ numbers_at_length_NJ <-subset(numbers_at_length_new, state=="NJ", select=c(l_in_
 numbers_at_length_DE <-subset(numbers_at_length_new, state=="DE", select=c(l_in_bin, C_l_new))
 numbers_at_length_MD <-subset(numbers_at_length_new, state=="MD", select=c(l_in_bin, C_l_new))
 numbers_at_length_VA <-subset(numbers_at_length_new, state=="VA", select=c(l_in_bin, C_l_new))
+numbers_at_length_NC <-subset(numbers_at_length_new, state=="NC", select=c(l_in_bin, C_l_new))
 
 
 
@@ -86,6 +87,7 @@ numbers_at_length_NJ$C_l_new=round(numbers_at_length_NJ$C_l_new)
 numbers_at_length_DE$C_l_new=round(numbers_at_length_DE$C_l_new)
 numbers_at_length_MD$C_l_new=round(numbers_at_length_MD$C_l_new)
 numbers_at_length_VA$C_l_new=round(numbers_at_length_VA$C_l_new)
+numbers_at_length_NC$C_l_new=round(numbers_at_length_NC$C_l_new)
 
 
 
@@ -97,6 +99,8 @@ tot_cat_NJ_predicted=sum(numbers_at_length_NJ$C_l_new)
 tot_cat_DE_predicted=sum(numbers_at_length_DE$C_l_new)
 tot_cat_MD_predicted=sum(numbers_at_length_MD$C_l_new)
 tot_cat_VA_predicted=sum(numbers_at_length_VA$C_l_new)
+tot_cat_NC_predicted=sum(numbers_at_length_NC$C_l_new)
+
 
 tot_cat_MA_base=sum(subset(selectivity, state == "MA")$C_l)
 tot_cat_RI_base=sum(subset(selectivity, state == "RI")$C_l)
@@ -106,6 +110,7 @@ tot_cat_NJ_base=sum(subset(selectivity, state == "NJ")$C_l)
 tot_cat_DE_base=sum(subset(selectivity, state == "DE")$C_l)
 tot_cat_MD_base=sum(subset(selectivity, state == "MD")$C_l)
 tot_cat_VA_base=sum(subset(selectivity, state == "VA")$C_l)
+tot_cat_NC_base=sum(subset(selectivity, state == "NC")$C_l)
 
 
 
@@ -118,6 +123,7 @@ catch_expansion_factor_NJ=round(tot_cat_NJ_predicted/tot_cat_NJ_base, digits=4)
 catch_expansion_factor_DE=round(tot_cat_DE_predicted/tot_cat_DE_base, digits=4)
 catch_expansion_factor_MD=round(tot_cat_MD_predicted/tot_cat_MD_base, digits=4)
 catch_expansion_factor_VA=round(tot_cat_VA_predicted/tot_cat_VA_base, digits=4)
+catch_expansion_factor_NC=round(tot_cat_NC_predicted/tot_cat_NC_base, digits=4)
 
 sum(numbers_at_length_new$C_l)
 sum(numbers_at_length_new$C_l_new)
@@ -197,12 +203,20 @@ numbers_at_length_VA <- numbers_at_length_VA %>%
   I()
 
 
+numbers_at_length_NC <- numbers_at_length_NC %>% 
+  rename(fitted_length = l_in_bin,
+         nfish = C_l_new) %>% 
+  mutate(fitted_prob = nfish/sum(.$nfish),
+         region = rep("NC",nrow(.)),
+         year = rep("y2", nrow(.))) %>% 
+  I()
+
 
 #combine the datasets
 fitted_sizes_region_all_y2 = bind_rows(numbers_at_length_MA, numbers_at_length_RI,
                                        numbers_at_length_CT, numbers_at_length_NY,
                                        numbers_at_length_NJ, numbers_at_length_DE, 
-                                       numbers_at_length_MD, numbers_at_length_VA)
+                                       numbers_at_length_MD, numbers_at_length_VA, numbers_at_length_NC )
 
 # fitted_sizes_region_all_y2 = as.data.frame(bind_rows(numbers_at_length_MA, numbers_at_length_RI,
 #                                                      numbers_at_length_CT, numbers_at_length_NY,

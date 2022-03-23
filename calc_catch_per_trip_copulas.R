@@ -7,6 +7,7 @@ catch_data <- read_excel("observed_catch_NO_19.xlsx")
 sf <- catch_data$sf_tot_cat
 bsb <- catch_data$bsb_tot_cat
 
+cor(sf, bsb, method = c("kendall"))
 
 #estimate the nb parameters
 nbfit_sf = fitdistr(sf, "Negative Binomial")
@@ -56,6 +57,8 @@ catch_data_sim=data.frame( sf_t_nb, bsb_t_nb, region)
 mean(catch_data_sim$sf_t_nb)
 mean(catch_data$sf_tot_cat)
 
+cor(sf_t_nb, bsb_t_nb, method = c("kendall"))
+
 
 write_xlsx(catch_data_sim, "NO_catch_data_sim1.xlsx") 
 
@@ -71,6 +74,7 @@ catch_data <- read_excel("observed_catch_NJ_19.xlsx")
 sf <- catch_data$sf_tot_cat
 bsb <- catch_data$bsb_tot_cat
 
+cor(sf, bsb, method = c("kendall"))
 
 #estimate the nb parameters
 nbfit_sf = fitdistr(sf, "Negative Binomial")
@@ -120,6 +124,7 @@ catch_data_sim=data.frame( sf_t_nb, bsb_t_nb, region)
 mean(catch_data_sim$sf_t_nb)
 mean(catch_data$sf_tot_cat)
 
+cor(sf_t_nb, bsb_t_nb, method = c("kendall"))
 
 write_xlsx(catch_data_sim, "NJ_catch_data_sim1.xlsx") 
 
