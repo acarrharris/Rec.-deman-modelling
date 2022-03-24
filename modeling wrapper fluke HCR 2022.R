@@ -152,7 +152,7 @@ for (r in regs){
 
 
 state_output = data.frame()
-#for (x in 1:1){
+for (x in 1:1){
   
   ##########  
   # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 

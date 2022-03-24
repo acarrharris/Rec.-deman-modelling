@@ -456,7 +456,7 @@ for(p in levels(periodz)){
     
     
     # Expected utility (prediction year)
-    trip_data$NC = trip_data$beta_sqrt_sf_keep*sqrt(trip_data$tot_keep) +
+    trip_data$vA = trip_data$beta_sqrt_sf_keep*sqrt(trip_data$tot_keep) +
       trip_data$beta_sqrt_sf_release*sqrt(trip_data$tot_rel) +  
       trip_data$beta_sqrt_bsb_keep*sqrt(trip_data$tot_keep_bsb) +
       trip_data$beta_sqrt_bsb_release*sqrt(trip_data$tot_rel_bsb) +  

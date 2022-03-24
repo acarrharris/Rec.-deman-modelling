@@ -227,6 +227,6 @@ fitted_sizes_region_all_y2 = subset(fitted_sizes_region_all_y2, select=c(fitted_
 fitted_sizes_region_all_y2$cdf <- ave(fitted_sizes_region_all_y2$fitted_prob, fitted_sizes_region_all_y2$region, FUN=cumsum)
 
 # This file contains the new catch-at-length distribution for the prediction year
-#write_xlsx(fitted_sizes_region_all_y2,"sf_fitted_sizes_y2plus.xlsx")
+write_xlsx(fitted_sizes_region_all_y2,"sf_fitted_sizes_y2plus.xlsx")
 saveRDS(fitted_sizes_region_all_y2,file = "sf_fitted_sizes_y2plus.rds")
 
