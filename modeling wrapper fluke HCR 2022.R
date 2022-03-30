@@ -144,11 +144,11 @@ write_xlsx(aggregate_calibration_output,"aggregate_calibration_output.xlsx")
 
 ##########  
 
-regs <- c("plus1", "minus1", "minus2", "plus1_bag2", "minus1_bag2", "minus2_bag2")
-regs <- c("minus1")
+# regs <- c("plus1", "minus1", "minus2", "plus1_bag2", "minus1_bag2", "minus2_bag2")
+# regs <- c("minus1")
 
-for (r in regs){
-  regulation=r
+#for (r in regs){
+#  regulation=r
 
 
 state_output = data.frame()
@@ -162,15 +162,15 @@ for (x in 1:1){
   
   # THIS IS WHERE TO IMPORT THE NUMBERS AT AGE FROM THE OPERATING MODEL
   #2018 numbers (median)
-  # numbers_at_age = data.frame(read_excel("numbers_at_age_2018.xlsx"))
-  # numbers_at_age$Na=numbers_at_age$Na*1000
+  numbers_at_age = data.frame(read_excel("numbers_at_age_2018.xlsx"))
+  numbers_at_age$Na=numbers_at_age$Na*1000
   
   #2019 numbers (median)
   # numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
   # numbers_at_age$Na=numbers_at_age$Na*1000
   
   #2022 numbers (median)
-  numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_median.xlsx"))
+  # numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_median.xlsx"))
   
   #2022 numbers (draw from a sample of 100) - use this to incorporate uncertainty 
   # numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_sample100.xlsx"))
@@ -187,7 +187,9 @@ for (x in 1:1){
   ##########  
   # run the simulation code under the new set of regulations (regulation file is directed_trips_region - alternative regs test.xlsx)
   
-  directed_trip_alt_regs=data.frame(read_excel(paste0("directed_trips_regions_bimonthly_HCR_",regulation,".xlsx")))
+  #directed_trip_alt_regs=data.frame(read_excel(paste0("directed_trips_regions_bimonthly_HCR_",regulation,".xlsx")))
+  directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly.xlsx"))
+  
   directed_trip_alt_regs$dtrip_2019=round(directed_trip_alt_regs$dtrip_2019)
 
 
@@ -235,11 +237,15 @@ for (x in 1:1){
   
   
   state_output =rbind(state_output, state_prediction_output1)
-  state_output$reg=regulation
+  #state_output$reg=regulation
+  state_output$reg="2018_test"
+  
 }
-write_xlsx(state_output,paste0("state_output_nostop_",regulation,".xlsx"))
+write_xlsx(state_output,"state_output_nostop_2018test.xlsx")
 
-}
+#write_xlsx(state_output,paste0("state_output_nostop_",regulation,".xlsx"))
+
+#}
 
 
 #aggregate_prediction_output= subset(prediction_output_by_period, select=-c(state, alt_regs, period))

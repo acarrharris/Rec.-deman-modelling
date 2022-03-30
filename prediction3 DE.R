@@ -45,7 +45,7 @@ periodz=as.factor(directed_trips$period)
 levels(periodz)
 
 for(p in levels(periodz)){
-  directed_trips_p = subset(directed_trips, period == p)
+  directed_trips_p = subset(directed_trips, period == P)
   n_trips = mean(directed_trips_p$dtrip_2019)
   n_draws = min(1000,n_trips*2.5 )
   fluke_bag = mean(directed_trips_p$fluke_bag)
