@@ -153,6 +153,7 @@ write_xlsx(aggregate_calibration_output,"aggregate_calibration_output.xlsx")
 
 state_output = data.frame()
 for (x in 1:1){
+   regulation="2016_test"
   
   ##########  
   # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
@@ -161,9 +162,17 @@ for (x in 1:1){
   #source("catch at length given stock structure - prediction.R")
   
   # THIS IS WHERE TO IMPORT THE NUMBERS AT AGE FROM THE OPERATING MODEL
-  #2018 numbers (median)
-  numbers_at_age = data.frame(read_excel("numbers_at_age_2018.xlsx"))
+  #2016 numbers (from stock assessment document)
+  numbers_at_age = data.frame(read_excel("numbers_at_age_2016.xlsx"))
   numbers_at_age$Na=numbers_at_age$Na*1000
+  
+  #2017 numbers (from stock assessment document)
+  #numbers_at_age = data.frame(read_excel("numbers_at_age_2017.xlsx"))
+  #numbers_at_age$Na=numbers_at_age$Na*1000
+  
+  #2018 numbers (median)
+  #numbers_at_age = data.frame(read_excel("numbers_at_age_2018.xlsx"))
+  #numbers_at_age$Na=numbers_at_age$Na*1000
   
   #2019 numbers (median)
   # numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
@@ -188,19 +197,28 @@ for (x in 1:1){
   # run the simulation code under the new set of regulations (regulation file is directed_trips_region - alternative regs test.xlsx)
   
   #directed_trip_alt_regs=data.frame(read_excel(paste0("directed_trips_regions_bimonthly_HCR_",regulation,".xlsx")))
-  directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly.xlsx"))
+  #directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly.xlsx"))
+  directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_19_16.xlsx"))
   
   directed_trip_alt_regs$dtrip_2019=round(directed_trip_alt_regs$dtrip_2019)
 
 
   source("prediction3 MA.R")
+  state1
   source("prediction3 RI.R")
+  state1
   source("prediction3 CT.R")
+  state1
   source("prediction3 NY.R")
+  state1
   source("prediction3 NJ.R")
+  state1
   source("prediction3 DE.R")
+  state1
   source("prediction3 MD.R")
+  state1
   source("prediction3 VA.R")
+  state1
   source("prediction3 NC.R")
   
 
@@ -237,13 +255,12 @@ for (x in 1:1){
   
   
   state_output =rbind(state_output, state_prediction_output1)
-  #state_output$reg=regulation
-  state_output$reg="2018_test"
-  
-}
-write_xlsx(state_output,"state_output_nostop_2018test.xlsx")
+  state_output$reg=regulation
 
-#write_xlsx(state_output,paste0("state_output_nostop_",regulation,".xlsx"))
+}
+#write_xlsx(state_output,"state_output_nostop_2017test.xlsx")
+
+write_xlsx(state_output,paste0("state_output_nostop_",regulation,".xlsx"))
 
 #}
 

@@ -59,7 +59,7 @@ for(p in levels(periodz)){
   # Set up an output file for the separate catch draw files 
   dfs = list()
   
-  for(i in 1:10) {
+ for(i in 1:10) {
     
     # Input catch-per-trip numbers 
     sf_catch_data = data.frame(read_excel("predicted_catch_MD.xlsx"))                                                                            
@@ -388,7 +388,7 @@ for(p in levels(periodz)){
     
     # merge catch information for other species. Assume per-trip catch outcomes for these species are the same as the calibration. 
     # This info is contained in the costs_new_all_state datasets
-    wf_data=subset(costs_new_all_MD, period ==p & catch_draw==i, select=c(tripid, tot_keep_wf_base, tot_rel_wf_base )) 
+    wf_data=subset(costs_new_all_MD, period==p & catch_draw==i, select=c(tripid, tot_keep_wf_base, tot_rel_wf_base )) 
     
 
     names(wf_data)[names(wf_data) == "tot_keep_wf_base"] = "tot_keep_wf"
