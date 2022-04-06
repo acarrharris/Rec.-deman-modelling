@@ -63,6 +63,7 @@ numbers_at_length_new <-subset(numbers_at_length_new, N_l!=0 & state!=0)
 numbers_at_length_new$q = as.numeric(numbers_at_length_new$q)
 numbers_at_length_new$C_l_new = (numbers_at_length_new$q)*(numbers_at_length_new$N_l)*(numbers_at_length_new$E)
 sum(numbers_at_length_new$C_l_new)
+#write_xlsx(numbers_at_length_new,"numbers_at_length_new.xlsx")
 
 
 
