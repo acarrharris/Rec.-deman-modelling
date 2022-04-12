@@ -52,6 +52,7 @@ install.packages("writexl")
 install.packages("logspline")
 install.packages("xtable")
 install.packages("devtools")
+install.packages("plyr")
 
 library(psych)
 library(rgl)
@@ -63,6 +64,7 @@ library(univariateML)
 library(xlsx)
 library(fitdistrplus)
 library(logspline)
+library(plyr)
 
 library(Rcpp)
 library(writexl)
@@ -87,7 +89,10 @@ library(stats)
 ptm <- proc.time()
 
 
+state_output = data.frame()
+state_cal_output = data.frame()
 
+for (x in 1:5){
 ##########
 # Estimate the catch-per-trip copulas so we don't re-estimate every time
 source("calc_catch_per_trip_copulas.R")
@@ -129,6 +134,14 @@ aggregate_calibration_output= subset(calibration_output_by_period, select=-c(sta
 aggregate_calibration_output = aggregate(aggregate_calibration_output, by=list(calibration_output_by_period$sim),FUN=sum, na.rm=TRUE)
 write_xlsx(aggregate_calibration_output,"aggregate_calibration_output.xlsx")
 
+calibration_output_by_period$draw = x
+state_cal_output =rbind.fill(state_cal_output, calibration_output_by_period)
+# 
+# }
+# #write_xlsx(state_output,"state_output_nostop_2017test.xlsx")
+# 
+# write_xlsx(state_cal_output,"state_cal_output_all.xlsx")
+
 
 #Apply the calibration estimates of total catch to the catch-at-length distribution used in the assessment 
 # tot_sf_keep = aggregate_calibration_output$tot_keep
@@ -150,10 +163,10 @@ write_xlsx(aggregate_calibration_output,"aggregate_calibration_output.xlsx")
 #for (r in regs){
 #  regulation=r
 
-
-state_output = data.frame()
-for (x in 1:1){
-   regulation="2016_test"
+# 
+# state_output = data.frame()
+# for (x in 1:20){
+    regulation="2019_test"
   
   ##########  
   # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
@@ -163,8 +176,8 @@ for (x in 1:1){
   
   # THIS IS WHERE TO IMPORT THE NUMBERS AT AGE FROM THE OPERATING MODEL
   #2016 numbers (from stock assessment document)
-  numbers_at_age = data.frame(read_excel("numbers_at_age_2016.xlsx"))
-  numbers_at_age$Na=numbers_at_age$Na*1000
+  #numbers_at_age = data.frame(read_excel("numbers_at_age_2016.xlsx"))
+  #numbers_at_age$Na=numbers_at_age$Na*1000
   
   #2017 numbers (from stock assessment document)
   #numbers_at_age = data.frame(read_excel("numbers_at_age_2017.xlsx"))
@@ -175,8 +188,8 @@ for (x in 1:1){
   #numbers_at_age$Na=numbers_at_age$Na*1000
   
   #2019 numbers (median)
-  # numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
-  # numbers_at_age$Na=numbers_at_age$Na*1000
+   numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
+   numbers_at_age$Na=numbers_at_age$Na*1000
   
   #2022 numbers (median)
   # numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_median.xlsx"))
@@ -198,8 +211,9 @@ for (x in 1:1){
   
   #directed_trip_alt_regs=data.frame(read_excel(paste0("directed_trips_regions_bimonthly_HCR_",regulation,".xlsx")))
   #directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly.xlsx"))
-  directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_19_16.xlsx"))
-  
+  #directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_19_16.xlsx"))
+  directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_test.xlsx"))
+   
   directed_trip_alt_regs$dtrip_2019=round(directed_trip_alt_regs$dtrip_2019)
 
 
@@ -254,13 +268,14 @@ for (x in 1:1){
   state_prediction_output1$draw = x
   
   
-  state_output =rbind(state_output, state_prediction_output1)
+  state_output =rbind.fill(state_output, state_prediction_output1)
   state_output$reg=regulation
 
 }
 #write_xlsx(state_output,"state_output_nostop_2017test.xlsx")
 
-write_xlsx(state_output,paste0("state_output_nostop_",regulation,".xlsx"))
+write_xlsx(state_output,"state_pred_output_all.xlsx")
+write_xlsx(state_cal_output,"state_cal_output_all.xlsx")
 
 #}
 
