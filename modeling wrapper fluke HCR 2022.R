@@ -92,7 +92,6 @@ ptm <- proc.time()
 state_output = data.frame()
 state_cal_output = data.frame()
 
-for (x in 1:5){
 ##########
 # Estimate the catch-per-trip copulas so we don't re-estimate every time
 source("calc_catch_per_trip_copulas.R")
@@ -128,13 +127,13 @@ calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_a
 calibration_output_by_period[is.na(calibration_output_by_period)] = 0
 write_xlsx(calibration_output_by_period,"calibration_output_by_period.xlsx")
 
-
+rm(utilites_MA, utilites_RI, utilites_CT, utilites_NY, utilites_NJ, utilites_DE, utilites_MD, utilites_VA, utilites_NC )
 
 aggregate_calibration_output= subset(calibration_output_by_period, select=-c(state, alt_regs, period))
 aggregate_calibration_output = aggregate(aggregate_calibration_output, by=list(calibration_output_by_period$sim),FUN=sum, na.rm=TRUE)
 write_xlsx(aggregate_calibration_output,"aggregate_calibration_output.xlsx")
 
-calibration_output_by_period$draw = x
+#calibration_output_by_period$draw = x
 state_cal_output =rbind.fill(state_cal_output, calibration_output_by_period)
 # 
 # }
@@ -155,6 +154,36 @@ state_cal_output =rbind.fill(state_cal_output, calibration_output_by_period)
 # calibration_catch_at_length= subset(assment_CAL, select=c(l_in_bin, calibration_keep_at_length, calibration_release_at_length))
 # write_xlsx(calibration_catch_at_length,"calibration_catch_at_length.xlsx")
 
+#save calibration output objects
+saveRDS(calibration_output_by_period,file = "calibration_output_by_period.rds")
+saveRDS(aggregate_calibration_output,file = "aggregate_calibration_output.rds")
+#saveRDS(calibration_catch_at_length, file = "calibration_catch_at_length.rds")
+
+costs_all <- NULL
+costs_all[[1]] <- costs_new_all_MA
+costs_all[[2]] <- costs_new_all_RI
+costs_all[[3]] <- costs_new_all_CT
+costs_all[[4]] <- costs_new_all_NY
+costs_all[[5]] <- costs_new_all_NJ
+costs_all[[6]] <- costs_new_all_DE
+costs_all[[7]] <- costs_new_all_MD
+costs_all[[8]] <- costs_new_all_VA
+costs_all[[9]] <- costs_new_all_NC
+saveRDS(costs_all, file = "costs_all.rds")
+
+param_draws_all <- NULL
+param_draws_all[[1]] <- param_draws_MA
+param_draws_all[[2]] <- param_draws_RI
+param_draws_all[[3]] <- param_draws_CT
+param_draws_all[[4]] <- param_draws_NY
+param_draws_all[[5]] <- param_draws_NJ
+param_draws_all[[6]] <- param_draws_DE
+param_draws_all[[7]] <- param_draws_MD
+param_draws_all[[8]] <- param_draws_VA
+param_draws_all[[9]] <- param_draws_NC
+saveRDS(param_draws_all, file = "param_draws_all.rds")
+
+
 ##########  
 
 # regs <- c("plus1", "minus1", "minus2", "plus1_bag2", "minus1_bag2", "minus2_bag2")
@@ -164,8 +193,8 @@ state_cal_output =rbind.fill(state_cal_output, calibration_output_by_period)
 #  regulation=r
 
 # 
-# state_output = data.frame()
-# for (x in 1:20){
+ state_output = data.frame()
+ for (x in 1:5){
     regulation="2019_test"
   
   ##########  
@@ -271,10 +300,11 @@ state_cal_output =rbind.fill(state_cal_output, calibration_output_by_period)
   state_output =rbind.fill(state_output, state_prediction_output1)
   state_output$reg=regulation
 
-}
+ }
 #write_xlsx(state_output,"state_output_nostop_2017test.xlsx")
+write_xlsx(state_output,paste0("state_pred_output_all",regulation,".xlsx"))
 
-write_xlsx(state_output,"state_pred_output_all.xlsx")
+
 write_xlsx(state_cal_output,"state_cal_output_all.xlsx")
 
 #}
@@ -296,4 +326,15 @@ proc.time() - ptm
 # Calculate ouput statisitics for calibration and prediction year
 #source("simulation output stats.R")
 
+sum(calibration_output_by_period[which(calibration_output_by_period$state=="MA"), 2])
+sum(pds_new_all_MA$tot_keep)
+
+
+sum(calibration_output_by_period[which(calibration_output_by_period$state=="MA"), 9])
+sum(pds_new_all_MA$n_choice_occasions)
+
+sum(calibration_output_by_period[which(calibration_output_by_period$state=="RI"), 2])
+sum(calibration_output_by_period[which(calibration_output_by_period$state=="RI"), 9])
+
+sum(pds_new_all_RI$n_choice_occasions)
 

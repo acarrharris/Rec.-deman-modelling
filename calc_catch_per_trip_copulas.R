@@ -57,7 +57,7 @@ catch_data_sim=data.frame( sf_t_nb, bsb_t_nb, region)
 mean(catch_data_sim$sf_t_nb)
 mean(catch_data$sf_tot_cat)
 
-cor(sf_t_nb, bsb_t_nb, method = c("kendall"))
+#cor(sf_t_nb, bsb_t_nb, method = c("kendall"))
 
 
 write_xlsx(catch_data_sim, "NO_catch_data_sim1.xlsx") 
@@ -124,7 +124,7 @@ catch_data_sim=data.frame( sf_t_nb, bsb_t_nb, region)
 mean(catch_data_sim$sf_t_nb)
 mean(catch_data$sf_tot_cat)
 
-cor(sf_t_nb, bsb_t_nb, method = c("kendall"))
+#cor(sf_t_nb, bsb_t_nb, method = c("kendall"))
 
 write_xlsx(catch_data_sim, "NJ_catch_data_sim1.xlsx") 
 

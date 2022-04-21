@@ -41,7 +41,9 @@ levels(periodz)
 for(p in levels(periodz)){
   directed_trips_p = subset(directed_trips, period == p)
   n_trips = mean(directed_trips_p$dtrip_2019)
-  n_draws = min(1000,n_trips*2.5 )
+  #n_draws = min(1000,n_trips*2.5 )
+  n_draws = 30000
+  
   fluke_bag = mean(directed_trips_p$fluke_bag_2019)
   fluke_min = mean(directed_trips_p$fluke_min_2019)
   bsb_bag = mean(directed_trips_p$bsb_bag_2019)
@@ -457,6 +459,36 @@ for(p in levels(periodz)){
 
 pds_all= list.stack(pds, fill=TRUE)
 pds_all[is.na(pds_all)] = 0
+rm(pds)
+
+
+#Create random draws of preference parameters based on the estimated means and SD from the choice model
+utilites_NC = list()
+for(d in 1:100) {
+  
+  param_draws_NC = as.data.frame(1:30000)
+  names(param_draws_NC)[names(param_draws_NC) == "1:30000"] = "tripid"
+  
+  param_draws_NC$beta_sqrt_sf_keep = rnorm(30000, mean = 0.521, sd = 0.464)
+  param_draws_NC$beta_sqrt_sf_release = rnorm(30000, mean = 0.108, sd = 0.221)
+  param_draws_NC$beta_sqrt_bsb_keep = rnorm(30000, mean = 0.192, sd = 0.200)
+  param_draws_NC$beta_sqrt_bsb_release = rnorm(30000, mean = 0, sd = 0.131)
+  param_draws_NC$beta_sqrt_wf_keep = rnorm(30000, mean = 0.231, sd =  0.393)
+  param_draws_NC$beta_sqrt_wf_release = rnorm(30000, mean = 0, sd = 0.146)
+  param_draws_NC$beta_sqrt_rd_keep = rnorm(30000, mean = 0.454, sd =  0.601)
+  param_draws_NC$beta_sqrt_rd_release = rnorm(30000, mean = 0.081, sd = 0.356)
+  param_draws_NC$beta_opt_out = rnorm(30000, mean = -3.908, sd = 2.918)
+  param_draws_NC$beta_striper_blue = rnorm(30000, mean = 0.454, sd = 1.991)
+  param_draws_NC$beta_cost = rnorm(30000, mean = -0.008, sd = 0)
+ 
+  param_draws_NC$parameter_draw=d
+  
+  utilites_NC[[d]]= param_draws_NC
+  
+}
+utilites_NC_all=list.stack(utilites_NC, fill=TRUE)
+
+
 
 # Now calculate trip probabilities and utilities based on the multiple catch draws for each choice occasion
 costs_new_NC = list()
@@ -501,29 +533,8 @@ for(p in levels(periodz)){
   
   for(d in 1:1) {
     
-    #Create radnom draws of preference parameters based on the estimated means and SD from the choice model
-    #For now I am drawing only one set of utility parameters across the sample 
-    
-    param_draws_NC = as.data.frame(1:10000)
-    names(param_draws_NC)[names(param_draws_NC) == "1:10000"] = "tripid"
-    
-    param_draws_NC$beta_sqrt_sf_keep = rnorm(10000, mean = 0.521, sd = 0.464)
-    param_draws_NC$beta_sqrt_sf_release = rnorm(10000, mean = 0.108, sd = 0.221)
-    param_draws_NC$beta_sqrt_bsb_keep = rnorm(10000, mean = 0.192, sd = 0.200)
-    param_draws_NC$beta_sqrt_bsb_release = rnorm(10000, mean = 0, sd = 0.131)
-    param_draws_NC$beta_sqrt_wf_keep = rnorm(10000, mean = 0.231, sd =  0.393)
-    param_draws_NC$beta_sqrt_wf_release = rnorm(10000, mean = 0, sd = 0.146)
-    param_draws_NC$beta_sqrt_rd_keep = rnorm(10000, mean = 0.454, sd =  0.601)
-    param_draws_NC$beta_sqrt_rd_release = rnorm(10000, mean = 0.081, sd = 0.356)
-    param_draws_NC$beta_opt_out = rnorm(10000, mean = -3.908, sd = 2.918)
-    param_draws_NC$beta_striper_blue = rnorm(10000, mean = 0.454, sd = 1.991)
-    param_draws_NC$beta_cost = rnorm(10000, mean = -0.008, sd = 0)
-    
-    
-    param_draws_NC$parameter_draw=d
-    
-    trip_data =  merge(param_draws_NC,trip_data,by="tripid")
-    
+    param_draws_NC= utilites_NC[[1]]
+    trip_data =  merge(param_draws_NC,trip_data,by="tripid")  
     
     
     #Expected utility
@@ -638,19 +649,19 @@ for(p in levels(periodz)){
 
 
 pds_new_all_NC=list.stack(pds_new, fill=TRUE)
-
 pds_new_all_NC[is.na(pds_new_all_NC)] = 0
 pds_new_all_NC$state = state1
 pds_new_all_NC$alt_regs = 0
 pds_new_all_NC= subset(pds_new_all_NC, select=-c(Group.1, tot_sf_catch, tot_bsb_catch))
+rm(pds_new)
 
 
 
 # costs_new_all contain trip outcomes for the baseline period. Will use to calculate welfare changes, 
 # and assign catch-per-trip in the prediction years. 
 costs_new_all_NC=list.stack(costs_new_NC, fill=TRUE)
-
 costs_new_all_NC[is.na(costs_new_all_NC)] = 0
+rm(costs_new_NC)
 
 
 
