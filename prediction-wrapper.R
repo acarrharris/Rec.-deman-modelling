@@ -28,14 +28,18 @@ lapply(pkgs_to_use, library, character.only = TRUE)
 ### 
 
 # Input the data set containing alternative regulations and directed trips (directed_trips_region - alternative regs test.xlsx)
-#directed_trips_table <- data.frame(read_excel("directed_trips_region - alternative regs test.xlsx"))
+directed_trips_table <- data.frame(read_excel("directed_trips_regions_bimonthly_test.xlsx"))
+directed_trips_table<-saveRDS(directed_trips_table, file = "directed_trips_regions_bimonthly_test.rds")
 directed_trips_table <- readRDS("directed_trips_regions_bimonthly_test.rds")
+
+
 #directed_trips_table <- readRDS("coastwide_regulations_scenario.rds")
 # Input the calibration output which contains the number of choice occasions needed to simulate
-#calibration_data = data.frame(read_excel("calibration_output_by_period.xlsx"))
 calibration_data_table <- readRDS("calibration_output_by_period.rds")
+
 #utility parameter draws
 param_draws_all <- readRDS("param_draws_all.rds")
+
 #costs
 costs_new <- readRDS( "costs_all.rds")
 
@@ -67,7 +71,10 @@ numbers_at_age$Na=numbers_at_age$Na*1000
 #2022 numbers (draw from a sample of 100) - use this to incorporate uncertainty 
 # numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_sample100.xlsx"))
 # numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==x)
-
+# 
+# ma_test = data.frame()
+# for (s in 1:30){
+  
 source("CAL given stock structure by state.R")
 
 
@@ -134,7 +141,7 @@ params <- list(state1 = c("MA","RI","CT","NY","NJ","DE","MD","VA", "NC"),
                size_data_read = rep(list(size_data_read),9),
                param_draws_MA = param_draws_all,
                costs_new_all_MA = costs_new,
-               
+
                #sf_catch_data_all = c(rep(list(sf_catch_data_no),4),list(sf_catch_data_nj),rep(list(sf_catch_data_so),4)),
                sf_catch_data_all = c(list(sf_catch_data_ma),list(sf_catch_data_ri),
                                      list(sf_catch_data_ct),list(sf_catch_data_ny),
@@ -185,11 +192,20 @@ params <- list(state1 = c("MA","RI","CT","NY","NJ","DE","MD","VA", "NC"),
 #source("prediction-all.R")
 source("prediction-vec.R")
 
+# pds_new_all_MA$draw = s
+# 
+# 
+# ma_test =rbind.fill(ma_test, pds_new_all_MA)
+# }
+# 
+# write_xlsx(ma_test,"ma_test_GF.xlsx")
+test = data.frame()
+
 set.seed(1989)
 simkeep <- NULL
 simrel <- NULL
 simagg <- NULL
-for (jsim in 1:30) {
+for (jsim in 1:2) {
   ##########  need to add link to OM scenario regulations
   
   #params$dchoose <- rep(sample(1:1000,1),9)
@@ -219,9 +235,20 @@ for (jsim in 1:30) {
   
   
   prediction_output_by_period <- purrr::map(xx, 1)
-  
+  output <- as.data.frame(prediction_output_by_period)
+  output$draw<-jsim
   saveRDS(prediction_output_by_period, file = "prediction_output_by_period.rds")
-  
+}
+output=list.stack(output, fill=TRUE)
+
+test =rbind.fill(test, output)
+# pds_new_all_MA$draw = s
+# 
+# 
+# ma_test =rbind.fill(ma_test, pds_new_all_MA)
+# }
+# 
+# write_xlsx(ma_test,"ma_test_GF.xls
   #aggregate_prediction_output= subset(prediction_output_by_period, select=-c(state, alt_regs, period))
   aggregate_prediction_output <- prediction_output_by_period %>% 
     list.stack(fill = TRUE) %>% 

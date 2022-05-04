@@ -42,7 +42,7 @@ for(p in levels(periodz)){
   directed_trips_p = subset(directed_trips, period == p)
   n_trips = mean(directed_trips_p$dtrip_2019)
   #n_draws = min(1000,n_trips*2.5 )
-  n_draws = 30000
+  n_draws = n_drawz
   
   fluke_bag = mean(directed_trips_p$fluke_bag_2019)
   fluke_min = mean(directed_trips_p$fluke_min_2019)
@@ -482,7 +482,7 @@ for(d in 1:100) {
   param_draws_NC$beta_cost = rnorm(30000, mean = -0.008, sd = 0)
  
   param_draws_NC$parameter_draw=d
-  
+  param_draws_NC <- param_draws_NC[1:n_drawz, ] 
   utilites_NC[[d]]= param_draws_NC
   
 }
@@ -566,7 +566,8 @@ for(p in levels(periodz)){
     
     #Caluculate the expected utility of alts 2 and 3 based on the parameters of the utility function
     mean_trip_data$vA_optout= mean_trip_data$beta_opt_out*mean_trip_data$opt_out 
-    mean_trip_data$vA_striper_blue= mean_trip_data$beta_striper_blue*mean_trip_data$striper_blue 
+    mean_trip_data$vA_striper_blue= mean_trip_data$beta_striper_blue*mean_trip_data$striper_blue +
+                                    mean_trip_data$beta_cost*mean_trip_data$cost  
     
     #Now put these three values in the same column, exponentiate, and caluculate their sum (vA_col_sum)
     mean_trip_data$vA[mean_trip_data$alt!=1] <- 0

@@ -7,7 +7,7 @@ catch_data <- read_excel("observed_catch_NO_19.xlsx")
 sf <- catch_data$sf_tot_cat
 bsb <- catch_data$bsb_tot_cat
 
-cor(sf, bsb, method = c("kendall"))
+#cor(sf, bsb, method = c("kendall"))
 
 #estimate the nb parameters
 nbfit_sf = fitdistr(sf, "Negative Binomial")
@@ -74,7 +74,7 @@ catch_data <- read_excel("observed_catch_NJ_19.xlsx")
 sf <- catch_data$sf_tot_cat
 bsb <- catch_data$bsb_tot_cat
 
-cor(sf, bsb, method = c("kendall"))
+#cor(sf, bsb, method = c("kendall"))
 
 #estimate the nb parameters
 nbfit_sf = fitdistr(sf, "Negative Binomial")

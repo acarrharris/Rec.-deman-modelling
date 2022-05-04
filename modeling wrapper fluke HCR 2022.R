@@ -85,6 +85,8 @@ library(stats)
 #setwd("C:/Users/andrew.carr-harris/Dropbox/NMFS/fluke_mse/simulation_R_code/")
 #setwd("C:/Users/Lou/Dropbox/NMFS/fluke_mse/simulation_R_code/")
 
+n_drawz<-1000
+
 # Start the clock!
 ptm <- proc.time()
 
@@ -155,33 +157,46 @@ state_cal_output =rbind.fill(state_cal_output, calibration_output_by_period)
 # write_xlsx(calibration_catch_at_length,"calibration_catch_at_length.xlsx")
 
 #save calibration output objects
-saveRDS(calibration_output_by_period,file = "calibration_output_by_period.rds")
-saveRDS(aggregate_calibration_output,file = "aggregate_calibration_output.rds")
-#saveRDS(calibration_catch_at_length, file = "calibration_catch_at_length.rds")
+# saveRDS(calibration_output_by_period,file = "calibration_output_by_period.rds")
+# saveRDS(aggregate_calibration_output,file = "aggregate_calibration_output.rds")
+# #saveRDS(calibration_catch_at_length, file = "calibration_catch_at_length.rds")
+# 
+# costs_all <- NULL
+# costs_all[[1]] <- costs_new_all_MA
+# costs_all[[2]] <- costs_new_all_RI
+# costs_all[[3]] <- costs_new_all_CT
+# costs_all[[4]] <- costs_new_all_NY
+# costs_all[[5]] <- costs_new_all_NJ
+# costs_all[[6]] <- costs_new_all_DE
+# costs_all[[7]] <- costs_new_all_MD
+# costs_all[[8]] <- costs_new_all_VA
+# costs_all[[9]] <- costs_new_all_NC
+# saveRDS(costs_all, file = "costs_all.rds")
+# 
+# saveRDS(costs_new_all_MA, file = "costs_new_all_MA.rds")
+# saveRDS(costs_new_all_RI, file = "costs_new_all_RI.rds")
+# saveRDS(costs_new_all_CT, file = "costs_new_all_CT.rds")
+# saveRDS(costs_new_all_NY, file = "costs_new_all_NY.rds")
+# saveRDS(costs_new_all_NJ, file = "costs_new_all_NJ.rds")
+# saveRDS(costs_new_all_DE, file = "costs_new_all_DE.rds")
+# saveRDS(costs_new_all_MD, file = "costs_new_all_MD.rds")
+# saveRDS(costs_new_all_VA, file = "costs_new_all_VA.rds")
+# saveRDS(costs_new_all_NC, file = "costs_new_all_NC.rds")
 
-costs_all <- NULL
-costs_all[[1]] <- costs_new_all_MA
-costs_all[[2]] <- costs_new_all_RI
-costs_all[[3]] <- costs_new_all_CT
-costs_all[[4]] <- costs_new_all_NY
-costs_all[[5]] <- costs_new_all_NJ
-costs_all[[6]] <- costs_new_all_DE
-costs_all[[7]] <- costs_new_all_MD
-costs_all[[8]] <- costs_new_all_VA
-costs_all[[9]] <- costs_new_all_NC
-saveRDS(costs_all, file = "costs_all.rds")
 
-param_draws_all <- NULL
-param_draws_all[[1]] <- param_draws_MA
-param_draws_all[[2]] <- param_draws_RI
-param_draws_all[[3]] <- param_draws_CT
-param_draws_all[[4]] <- param_draws_NY
-param_draws_all[[5]] <- param_draws_NJ
-param_draws_all[[6]] <- param_draws_DE
-param_draws_all[[7]] <- param_draws_MD
-param_draws_all[[8]] <- param_draws_VA
-param_draws_all[[9]] <- param_draws_NC
-saveRDS(param_draws_all, file = "param_draws_all.rds")
+
+# 
+# param_draws_all <- NULL
+# param_draws_all[[1]] <- param_draws_MA
+# param_draws_all[[2]] <- param_draws_RI
+# param_draws_all[[3]] <- param_draws_CT
+# param_draws_all[[4]] <- param_draws_NY
+# param_draws_all[[5]] <- param_draws_NJ
+# param_draws_all[[6]] <- param_draws_DE
+# param_draws_all[[7]] <- param_draws_MD
+# param_draws_all[[8]] <- param_draws_VA
+# param_draws_all[[9]] <- param_draws_NC
+# saveRDS(param_draws_all, file = "param_draws_all.rds")
 
 
 ##########  
@@ -194,8 +209,8 @@ saveRDS(param_draws_all, file = "param_draws_all.rds")
 
 # 
  state_output = data.frame()
- for (x in 1:5){
-    regulation="2019_test"
+ for (x in 1:30){
+    regulation="2016_test"
   
   ##########  
   # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
@@ -205,8 +220,8 @@ saveRDS(param_draws_all, file = "param_draws_all.rds")
   
   # THIS IS WHERE TO IMPORT THE NUMBERS AT AGE FROM THE OPERATING MODEL
   #2016 numbers (from stock assessment document)
-  #numbers_at_age = data.frame(read_excel("numbers_at_age_2016.xlsx"))
-  #numbers_at_age$Na=numbers_at_age$Na*1000
+  numbers_at_age = data.frame(read_excel("numbers_at_age_2016.xlsx"))
+  numbers_at_age$Na=numbers_at_age$Na*1000
   
   #2017 numbers (from stock assessment document)
   #numbers_at_age = data.frame(read_excel("numbers_at_age_2017.xlsx"))
@@ -217,8 +232,8 @@ saveRDS(param_draws_all, file = "param_draws_all.rds")
   #numbers_at_age$Na=numbers_at_age$Na*1000
   
   #2019 numbers (median)
-   numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
-   numbers_at_age$Na=numbers_at_age$Na*1000
+   #numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
+   #numbers_at_age$Na=numbers_at_age$Na*1000
   
   #2022 numbers (median)
   # numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_median.xlsx"))
@@ -241,8 +256,10 @@ saveRDS(param_draws_all, file = "param_draws_all.rds")
   #directed_trip_alt_regs=data.frame(read_excel(paste0("directed_trips_regions_bimonthly_HCR_",regulation,".xlsx")))
   #directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly.xlsx"))
   #directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_19_16.xlsx"))
-  directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_test.xlsx"))
-   
+  #directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_test.xlsx"))
+  #2018 regs
+  directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_19_16.xlsx"))
+  
   directed_trip_alt_regs$dtrip_2019=round(directed_trip_alt_regs$dtrip_2019)
 
 
@@ -305,7 +322,7 @@ saveRDS(param_draws_all, file = "param_draws_all.rds")
 write_xlsx(state_output,paste0("state_pred_output_all",regulation,".xlsx"))
 
 
-write_xlsx(state_cal_output,"state_cal_output_all.xlsx")
+#write_xlsx(state_cal_output,"state_cal_output_all.xlsx")
 
 #}
 

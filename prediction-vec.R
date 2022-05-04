@@ -12,9 +12,9 @@
 # 1) The output from the calibration: calibration_output_by_period.xlsx
 # 2) Dataset containing the alternative regulations to be imposed: directed_trips_region - alternative regs test.xlsx
 # 3) Abundance- and size-adjusted catch-at-length for summer flounder. This is an output file from the script catch at length given stock structure - prediction.R
-
-predict_rec_catch <- function(state1 = "MA", 
-                              region1 = "NO", 
+# 
+predict_rec_catch <- function(state1 = "NJ",
+                              region1 = "NJ",
                               calibration_data_table = NULL,
                               directed_trips_table = NULL,
                               size_data_read = NULL,
@@ -93,7 +93,7 @@ predict_rec_catch <- function(state1 = "MA",
     group_by(period) %>% 
     mutate(n_trips = floor(mean(dtrip_2019)),
            #n_draws = floor(min(1000,n_trips*2.5)))
-           n_draws = 30000)
+           n_draws = n_drawz)
   
   #n_draws = floor(min(10000,n_trips*2.5)))
   nsamp = 10
@@ -549,7 +549,8 @@ predict_rec_catch <- function(state1 = "MA",
   #Caluculate the expected utility of alts 2 and 3 based on the parameters of the utility function
   #These will be the same for both v0 and v1
   mean_trip_data$vA_optout= mean_trip_data$beta_opt_out*mean_trip_data$opt_out 
-  mean_trip_data$vA_striper_blue= mean_trip_data$beta_striper_blue*mean_trip_data$striper_blue 
+  mean_trip_data$vA_striper_blue= mean_trip_data$beta_striper_blue*mean_trip_data$striper_blue +
+                                   mean_trip_data$beta_cost*mean_trip_data$cost 
   
   #Now put these three values in the same column, exponentiate, and calculate their sum (vA_col_sum)
   mean_trip_data$vA[mean_trip_data$alt!=1] <- 0
