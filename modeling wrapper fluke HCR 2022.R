@@ -128,6 +128,7 @@ calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_a
 
 calibration_output_by_period[is.na(calibration_output_by_period)] = 0
 write_xlsx(calibration_output_by_period,"calibration_output_by_period.xlsx")
+saveRDS(calibration_output_by_period, file = "calibration_output_by_period.rds")
 
 rm(utilites_MA, utilites_RI, utilites_CT, utilites_NY, utilites_NJ, utilites_DE, utilites_MD, utilites_VA, utilites_NC )
 
@@ -161,17 +162,17 @@ state_cal_output =rbind.fill(state_cal_output, calibration_output_by_period)
 # saveRDS(aggregate_calibration_output,file = "aggregate_calibration_output.rds")
 # #saveRDS(calibration_catch_at_length, file = "calibration_catch_at_length.rds")
 # 
-# costs_all <- NULL
-# costs_all[[1]] <- costs_new_all_MA
-# costs_all[[2]] <- costs_new_all_RI
-# costs_all[[3]] <- costs_new_all_CT
-# costs_all[[4]] <- costs_new_all_NY
-# costs_all[[5]] <- costs_new_all_NJ
-# costs_all[[6]] <- costs_new_all_DE
-# costs_all[[7]] <- costs_new_all_MD
-# costs_all[[8]] <- costs_new_all_VA
-# costs_all[[9]] <- costs_new_all_NC
-# saveRDS(costs_all, file = "costs_all.rds")
+costs_all <- NULL
+costs_all[[1]] <- costs_new_all_MA
+costs_all[[2]] <- costs_new_all_RI
+costs_all[[3]] <- costs_new_all_CT
+costs_all[[4]] <- costs_new_all_NY
+costs_all[[5]] <- costs_new_all_NJ
+costs_all[[6]] <- costs_new_all_DE
+costs_all[[7]] <- costs_new_all_MD
+costs_all[[8]] <- costs_new_all_VA
+costs_all[[9]] <- costs_new_all_NC
+saveRDS(costs_all, file = "costs_all_1000.rds")
 # 
 # saveRDS(costs_new_all_MA, file = "costs_new_all_MA.rds")
 # saveRDS(costs_new_all_RI, file = "costs_new_all_RI.rds")
@@ -186,17 +187,17 @@ state_cal_output =rbind.fill(state_cal_output, calibration_output_by_period)
 
 
 # 
-# param_draws_all <- NULL
-# param_draws_all[[1]] <- param_draws_MA
-# param_draws_all[[2]] <- param_draws_RI
-# param_draws_all[[3]] <- param_draws_CT
-# param_draws_all[[4]] <- param_draws_NY
-# param_draws_all[[5]] <- param_draws_NJ
-# param_draws_all[[6]] <- param_draws_DE
-# param_draws_all[[7]] <- param_draws_MD
-# param_draws_all[[8]] <- param_draws_VA
-# param_draws_all[[9]] <- param_draws_NC
-# saveRDS(param_draws_all, file = "param_draws_all.rds")
+param_draws_all <- NULL
+param_draws_all[[1]] <- param_draws_MA
+param_draws_all[[2]] <- param_draws_RI
+param_draws_all[[3]] <- param_draws_CT
+param_draws_all[[4]] <- param_draws_NY
+param_draws_all[[5]] <- param_draws_NJ
+param_draws_all[[6]] <- param_draws_DE
+param_draws_all[[7]] <- param_draws_MD
+param_draws_all[[8]] <- param_draws_VA
+param_draws_all[[9]] <- param_draws_NC
+saveRDS(param_draws_all, file = "param_draws_all.rds")
 
 
 ##########  
@@ -220,8 +221,8 @@ state_cal_output =rbind.fill(state_cal_output, calibration_output_by_period)
   
   # THIS IS WHERE TO IMPORT THE NUMBERS AT AGE FROM THE OPERATING MODEL
   #2016 numbers (from stock assessment document)
-  numbers_at_age = data.frame(read_excel("numbers_at_age_2016.xlsx"))
-  numbers_at_age$Na=numbers_at_age$Na*1000
+  #numbers_at_age = data.frame(read_excel("numbers_at_age_2016.xlsx"))
+  #numbers_at_age$Na=numbers_at_age$Na*1000
   
   #2017 numbers (from stock assessment document)
   #numbers_at_age = data.frame(read_excel("numbers_at_age_2017.xlsx"))
@@ -232,8 +233,8 @@ state_cal_output =rbind.fill(state_cal_output, calibration_output_by_period)
   #numbers_at_age$Na=numbers_at_age$Na*1000
   
   #2019 numbers (median)
-   #numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
-   #numbers_at_age$Na=numbers_at_age$Na*1000
+   numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
+   numbers_at_age$Na=numbers_at_age$Na*1000
   
   #2022 numbers (median)
   # numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_median.xlsx"))

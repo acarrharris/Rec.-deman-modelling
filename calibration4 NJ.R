@@ -22,7 +22,7 @@ region1="NJ"
 
 
 #Import directed trips file - gives directed trips by regulatory period in 2019
-directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly.xlsx"))                                                                            
+directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_lb.xlsx"))                                                                            
 directed_trips$dtrip=round(directed_trips$dtrip_2019)
 directed_trips= subset(directed_trips, state == state1)
 
@@ -451,7 +451,6 @@ for(p in levels(periodz)){
 
 pds_all= list.stack(pds, fill=TRUE)
 pds_all[is.na(pds_all)] = 0
-pds_all=subset(pds_all, select=-c(tot_bsb_catch, tot_sf_catch))
 rm(pds)
 
 
@@ -463,19 +462,17 @@ for(d in 1:100) {
   
   param_draws_NJ = as.data.frame(1:30000)
   names(param_draws_NJ)[names(param_draws_NJ) == "1:30000"] = "tripid"
-  
-  param_draws_NJ$beta_sqrt_sf_keep = rnorm(30000, mean = 0.762, sd = 0.677)
-  param_draws_NJ$beta_sqrt_sf_release = rnorm(30000, mean = 0.0, sd = 0.181)
-  param_draws_NJ$beta_sqrt_bsb_keep = rnorm(30000, mean = 0.174, sd = 0.334)
+  param_draws_NJ$beta_sqrt_sf_keep = rnorm(30000, mean = 0.721, sd = 0.630)
+  param_draws_NJ$beta_sqrt_sf_release = rnorm(30000, mean = 0.0, sd = 0)
+  param_draws_NJ$beta_sqrt_bsb_keep = rnorm(30000, mean = 0.175, sd = 0.283)
   param_draws_NJ$beta_sqrt_bsb_release = rnorm(30000, mean = 0, sd = 0)
-  param_draws_NJ$beta_sqrt_scup_keep = rnorm(30000, mean = 0.097, sd =  0.113)
-  param_draws_NJ$beta_sqrt_scup_release = rnorm(30000, mean = -0.039, sd = 0.117)
-  param_draws_NJ$beta_sqrt_wf_keep = rnorm(30000, mean = 0.394, sd =  0.199)
-  param_draws_NJ$beta_sqrt_wf_release = rnorm(30000, mean = 0.093, sd = 0.278)
-  param_draws_NJ$beta_opt_out = rnorm(30000, mean = -2.095, sd = 2.394)
-  param_draws_NJ$beta_striper_blue = rnorm(30000, mean = 1.139, sd = 1.832)
-  param_draws_NJ$beta_cost = rnorm(30000, mean = -0.009, sd = 0)
-  
+  param_draws_NJ$beta_sqrt_scup_keep = rnorm(30000, mean = 0.096, sd =  0.128)
+  param_draws_NJ$beta_sqrt_scup_release = rnorm(30000, mean = -0.033, sd = 0.120)
+  param_draws_NJ$beta_sqrt_wf_keep = rnorm(30000, mean = 0.367, sd =  0.220)
+  param_draws_NJ$beta_sqrt_wf_release = rnorm(30000, mean = 0.096, sd = 0.223)
+  param_draws_NJ$beta_opt_out = rnorm(30000, mean = -1.877, sd = 1.969)
+  param_draws_NJ$beta_striper_blue = rnorm(30000, mean = 1.049, sd = 1.799)
+  param_draws_NJ$beta_cost = rnorm(30000, mean = -0.008, sd = 0)
   param_draws_NJ$parameter_draw=d
   param_draws_NJ <- param_draws_NJ[1:n_drawz, ] 
   
@@ -510,7 +507,7 @@ for(p in levels(periodz)){
   
   # Costs_new_state data sets will retain raw trip outcomes from the baseline scenario. 
   # We will merge these data to the prediction year outcomes to calculate changes in CS. 
-  costs_new_NJ[[p]] <-  subset(trip_data, select=c(tripid, cost, catch_draw, tot_keep, tot_rel, 
+  costs_new_NJ[[p]] <-  subset(trip_data, select=c(tripid, cost, catch_draw, tot_keep, tot_rel, tot_sf_catch,
                                                  tot_keep_bsb,tot_rel_bsb,tot_keep_scup, tot_rel_scup, tot_keep_wf, tot_rel_wf  ))
   
   names(costs_new_NJ[[p]])[names(costs_new_NJ[[p]]) == "tot_keep"] <-  "tot_keep_sf_base"

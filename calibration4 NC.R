@@ -22,7 +22,7 @@ region1="SO"
 
 
 #Import directed trips file - gives directed trips by regulatory period in 2019
-directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly.xlsx"))                                                                            
+directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_lb.xlsx"))                                                                            
 directed_trips$dtrip=round(directed_trips$dtrip_2019)
 directed_trips= subset(directed_trips, state == state1)
 
@@ -468,19 +468,17 @@ for(d in 1:100) {
   
   param_draws_NC = as.data.frame(1:30000)
   names(param_draws_NC)[names(param_draws_NC) == "1:30000"] = "tripid"
-  
-  param_draws_NC$beta_sqrt_sf_keep = rnorm(30000, mean = 0.521, sd = 0.464)
-  param_draws_NC$beta_sqrt_sf_release = rnorm(30000, mean = 0.108, sd = 0.221)
-  param_draws_NC$beta_sqrt_bsb_keep = rnorm(30000, mean = 0.192, sd = 0.200)
-  param_draws_NC$beta_sqrt_bsb_release = rnorm(30000, mean = 0, sd = 0.131)
-  param_draws_NC$beta_sqrt_wf_keep = rnorm(30000, mean = 0.231, sd =  0.393)
-  param_draws_NC$beta_sqrt_wf_release = rnorm(30000, mean = 0, sd = 0.146)
-  param_draws_NC$beta_sqrt_rd_keep = rnorm(30000, mean = 0.454, sd =  0.601)
-  param_draws_NC$beta_sqrt_rd_release = rnorm(30000, mean = 0.081, sd = 0.356)
-  param_draws_NC$beta_opt_out = rnorm(30000, mean = -3.908, sd = 2.918)
-  param_draws_NC$beta_striper_blue = rnorm(30000, mean = 0.454, sd = 1.991)
-  param_draws_NC$beta_cost = rnorm(30000, mean = -0.008, sd = 0)
- 
+  param_draws_NC$beta_sqrt_sf_keep = rnorm(30000, mean = 0.507, sd = 0.457)
+  param_draws_NC$beta_sqrt_sf_release = rnorm(30000, mean = 0.105, sd = 0.230)
+  param_draws_NC$beta_sqrt_bsb_keep = rnorm(30000, mean = 0.178, sd = 0.189)
+  param_draws_NC$beta_sqrt_bsb_release = rnorm(30000, mean = 0.025, sd = 0.087)
+  param_draws_NC$beta_sqrt_wf_keep = rnorm(30000, mean = 0.231, sd =  0.283)
+  param_draws_NC$beta_sqrt_wf_release = rnorm(30000, mean = 0, sd = 0.142)
+  param_draws_NC$beta_sqrt_rd_keep = rnorm(30000, mean = 0.428, sd =  0.472)
+  param_draws_NC$beta_sqrt_rd_release = rnorm(30000, mean = 0.081, sd = 0.324)
+  param_draws_NC$beta_opt_out = rnorm(30000, mean = -3.573, sd = 2.676)
+  param_draws_NC$beta_striper_blue = rnorm(30000, mean = 0.493, sd = 1.839)
+  param_draws_NC$beta_cost = rnorm(30000, mean = -0.007, sd = 0)
   param_draws_NC$parameter_draw=d
   param_draws_NC <- param_draws_NC[1:n_drawz, ] 
   utilites_NC[[d]]= param_draws_NC

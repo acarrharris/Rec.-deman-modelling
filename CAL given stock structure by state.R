@@ -12,7 +12,7 @@
 
 
 # Import the 2018 ALK (in centimeters) provided by M. Terceiro
-age_length_key = data.frame(read_excel("com_sv_len_age_adj_2018.xlsx"))
+age_length_key <- data.frame(read_excel("com_sv_len_age_adj_2018.xlsx"))
 
 
 #import a test numbers-at-age dataset
@@ -28,21 +28,25 @@ age_length_key = data.frame(read_excel("com_sv_len_age_adj_2018.xlsx"))
 
 
 # Merge the two above datasets and create population numbers-at-length (inches)
-numbers_at_length =  merge(age_length_key,numbers_at_age,by="age", all.x=TRUE, all.y=TRUE)
-numbers_at_length$N_l = numbers_at_length$proportion*numbers_at_length$Na
+numbers_at_length <-  merge(age_length_key,numbers_at_age,by="age", all.x=TRUE, all.y=TRUE)
+numbers_at_length$N_l <- numbers_at_length$proportion*numbers_at_length$Na
 
-numbers_at_length = aggregate(numbers_at_length, by=list(numbers_at_length$l_in_bin),FUN=sum, na.rm=TRUE)
+numbers_at_length <- aggregate(numbers_at_length, by=list(numbers_at_length$l_in_bin),FUN=sum, na.rm=TRUE)
 numbers_at_length <-subset(numbers_at_length, select=c(Group.1,N_l))
-names(numbers_at_length)[names(numbers_at_length) == "Group.1"] = "l_in_bin"
+names(numbers_at_length)[names(numbers_at_length) == "Group.1"] <- "l_in_bin"
 
 
 
 
 # Translate cms's to inches 
-numbers_at_length$l_in_bin = round(numbers_at_length$l_in_bin/2.54)
-numbers_at_length = aggregate(numbers_at_length, by=list(numbers_at_length$l_in_bin),FUN=sum, na.rm=TRUE)
+numbers_at_length$l_in_bin <- round(numbers_at_length$l_in_bin/2.54)
+numbers_at_length <- aggregate(numbers_at_length, by=list(numbers_at_length$l_in_bin),FUN=sum, na.rm=TRUE)
 numbers_at_length <-subset(numbers_at_length, select=c(Group.1,N_l))
-names(numbers_at_length)[names(numbers_at_length) == "Group.1"] = "l_in_bin"
+names(numbers_at_length)[names(numbers_at_length) == "Group.1"] <- "l_in_bin"
+
+
+numbers_at_length2 <- data.frame(read_excel("numbers_at_length_state_2019.xlsx"))
+
 
 
 #Translate numbers from 1,000's of fish
@@ -51,20 +55,193 @@ sum(numbers_at_length$N_l)
 
 
 # Import and merge the selectivity data to this file 
-selectivity = data.frame(read_excel("rec_selectivity_by_state_cdf_star_raw_18_19.xlsx"))
+selectivity <- data.frame(read_excel("rec_selectivity_by_state_cdf_star_raw_18_19.xlsx"))
 selectivity <-subset(selectivity, select=c(l_in_bin, state, q, E, C_l))
 
-numbers_at_length_new =  merge(selectivity,numbers_at_length,by="l_in_bin", all.x=TRUE, all.y=TRUE)
+numbers_at_length_new <-  merge(selectivity,numbers_at_length,by=c("l_in_bin"),  all.x=TRUE, all.y=TRUE)
 
-numbers_at_length_new[is.na(numbers_at_length_new)] = 0
-numbers_at_length_new <-subset(numbers_at_length_new, N_l!=0 & state!=0)
+#Replace N_l with estimated proportions in the baseline year
+
+numbers_at_length_new<-na.omit(numbers_at_length_new)
+numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "MA"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "MA"]*0.6717499
+numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "RI"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "RI"]*0.6717499
+numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "CT"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "CT"]*0.6717499
+numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "NY"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "NY"]*0.6717499
+numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "NJ"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "NJ"]*0.1826126
+numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "DE"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "DE"]*0.1456376
+numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "MD"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "MD"]*0.1456376
+numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "VA"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "VA"]*0.1456376
+numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "NC"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "NC"]*0.1456376
+
+
+
+#numbers_at_length_new =  merge(selectivity,numbers_at_length2,by=c("l_in_bin", "state"),  all.x=TRUE, all.y=TRUE)
+numbers_at_length_new <- subset(numbers_at_length_new, N_l!=0 & state!=0)
+
+sum(numbers_at_length_new$N_l_prop)
+
 
 # Create catch-at-length based on the new numbers-at-length
-numbers_at_length_new$q = as.numeric(numbers_at_length_new$q)
-numbers_at_length_new$C_l_new = (numbers_at_length_new$q)*(numbers_at_length_new$N_l)*(numbers_at_length_new$E)
+numbers_at_length_new$q <- as.numeric(numbers_at_length_new$q)
+
+numbers_at_length_new$C_l_new <- (numbers_at_length_new$q)*(numbers_at_length_new$N_l_prop)*(numbers_at_length_new$E)
 sum(numbers_at_length_new$C_l_new)
+sum(numbers_at_length_new$C_l)
+
+
+
 #write_xlsx(numbers_at_length_new,"numbers_at_length_new.xlsx")
 
+
+
+
+####Multiply the projected numbers-at-length by the biomass accessibility ratio###
+#Input the standared percent biomass predictions
+biomass_distn <- data.frame(read_excel("projected_biomass_by_region.xlsx"))
+biomass_distn <- subset(biomass_distn, year==2020)
+
+#Merge to the numbers_at_length_new file 
+numbers_at_length_new <-  merge(numbers_at_length_new,biomass_distn,by="state", all.x=TRUE, all.y=TRUE)
+numbers_at_length_new <- numbers_at_length_new %>% arrange(state, l_in_bin)
+
+
+numbers_at_length_new$reg[numbers_at_length_new$state=="MA"]<-"NO"
+numbers_at_length_new$reg[numbers_at_length_new$state=="RI"]<-"NO"
+numbers_at_length_new$reg[numbers_at_length_new$state=="CT"]<-"NO"
+numbers_at_length_new$reg[numbers_at_length_new$state=="NY"]<-"NO"
+numbers_at_length_new$reg[numbers_at_length_new$state=="NJ"]<-"NJ"
+numbers_at_length_new$reg[numbers_at_length_new$state=="DE"]<-"SO"
+numbers_at_length_new$reg[numbers_at_length_new$state=="MD"]<-"SO"
+numbers_at_length_new$reg[numbers_at_length_new$state=="VA"]<-"SO"
+numbers_at_length_new$reg[numbers_at_length_new$state=="NC"]<-"SO"
+
+#create sum of C_l_new
+numbers_at_length_new$sum_C_l=sum(numbers_at_length_new$C_l_new)
+
+numbers_at_length_new <- numbers_at_length_new %>%
+  mutate(sum_C_l_region_adj = sum_C_l*prediction)
+
+
+numbers_at_length_new <- numbers_at_length_new %>%
+  group_by(state) %>% 
+  mutate(sum_C_l_state = sum(C_l_new))
+
+numbers_at_length_new <- numbers_at_length_new %>%
+  mutate(prop_C_l = C_l_new/sum_C_l_state)
+
+
+numbers_at_length_new <- numbers_at_length_new %>%
+  mutate(C_l_new_prop_adj = sum_C_l_state*prop_C_l)
+
+
+sum(numbers_at_length_new$C_l_new_prop_adj)
+sum(numbers_at_length_new$C_l_new)
+
+
+numbers_at_length_new <- numbers_at_length_new %>%
+  group_by(state) %>% 
+  mutate(sum_C_l_new = sum(C_l_new_prop_adj))
+
+
+numbers_at_length_new <- numbers_at_length_new %>%
+  mutate(sum_C_l = sum(C_l_new))
+
+
+
+
+
+
+
+
+
+numbers_at_length_new <- numbers_at_length_new %>%
+  mutate(sum_C_l_region_new = sum_C_l_region*prediction)
+
+
+
+
+
+
+
+
+
+numbers_at_length_new$C_l_new_adj <-  (numbers_at_length_new$q)*(numbers_at_length_new$N_l_new_prop)*(numbers_at_length_new$E)
+
+
+
+
+
+numbers_at_length_new$C_l_new_adj <-  (numbers_at_length_new$q)*(numbers_at_length_new$N_l_new_prop)*(numbers_at_length_new$E)
+
+sum(numbers_at_length_new$C_l_new_adj)
+sum(numbers_at_length_new$C_l_new)
+sum(numbers_at_length_new$C_l)
+
+
+
+
+
+
+numbers_at_length_new$sum_N_l  <- with(numbers_at_length_new, ave(N_l, FUN = sum))
+numbers_at_length_new$sum_N_l <- numbers_at_length_new$prediction * numbers_at_length_new$sum_N_l
+
+
+numbers_at_length_new$sum_N_l_state <- ave(numbers_at_length_new$N_l, numbers_at_length_new[,c("state")], FUN=sum)
+
+numbers_at_length_new$state_prop <- numbers_at_length_new$sum_N_l_state/numbers_at_length_new$sum_N_l  
+
+
+
+numbers_at_length_new$N_l_new = sum_baseline*numbers_at_length_new$prediction
+sum(numbers_at_length_new$N_l_new)
+sum(numbers_at_length_new$N_l)
+
+numbers_at_length_new$C_l_new_adj =  (numbers_at_length_new$q)*(numbers_at_length_new$N_l_new)*(numbers_at_length_new$E)
+sum(numbers_at_length_new$C_l_new_adj)
+
+
+
+
+numbers_at_length_new$C_l_new_adj = (numbers_at_length_new$C_l_new)*(numbers_at_length_new$norm_pred)
+sum(numbers_at_length_new$C_l_new_adj)
+
+
+
+#Generate a new numbers-at-length variable that is adjusted based on predicted availability
+#numbers_at_length_new$N_l_adj = (numbers_at_length_new$N_l)*(numbers_at_length_new$stand_pred)
+
+#calculate a correction factor that corrects for rounding error. The sum of biomass-availability-adjusted numbers-at-length 
+#should equal the sum of unadjusted numbers-at-length
+
+#correction_factor<-sum(numbers_at_length_new$N_l)/sum(numbers_at_length_new$N_l_adj)
+#numbers_at_length_new$N_l_adj<-numbers_at_length_new$N_l_adj*correction_factor
+#write_xlsx(numbers_at_length_new,"numbers_at_length_new.xlsx")
+
+
+
+
+# sum(numbers_at_length_new$N_l)
+# sum(numbers_at_length_new$N_l_adj)
+# write_xlsx(numbers_at_length_new,"numbers_at_length_new.xlsx")
+
+# 
+# 
+# #Generate a new catch-at-length variable that is adjusted based on predicted availability
+# numbers_at_length_new$C_l_new_adj <- (numbers_at_length_new$q)*(numbers_at_length_new$N_l_adj)*(numbers_at_length_new$E)
+# 
+# 
+# sum(numbers_at_length_new$C_l_new)
+# sum(numbers_at_length_new$C_l_new_adj)
+# 
+# numbers_at_length_new$C_l_new_adj <- numbers_at_length_new$C_l_new_adj*correction_factor
+# 
+# sum(numbers_at_length_new$C_l_new)
+# sum(numbers_at_length_new$C_l_new_adj)
+# 
+# write_xlsx(numbers_at_length_new,"numbers_at_length_new.xlsx")
+
+
+###########
 
 
 # subset the catch-at-length new datstet by region
@@ -128,6 +305,22 @@ catch_expansion_factor_NC=round(tot_cat_NC_predicted/tot_cat_NC_base, digits=4)
 
 sum(numbers_at_length_new$C_l)
 sum(numbers_at_length_new$C_l_new)
+
+sum(numbers_at_length$N_l)
+
+
+#Create a factor that expands total catch by state based on biomass availability
+biomass_distn = data.frame(read_excel("projected_biomass_by_region.xlsx"))
+biomass_distn = subset(biomass_distn, year==2020)
+
+numbers_at_length_new =  merge(numbers_at_length_new,biomass_distn,by="state")
+numbers_at_length_new$C_l_new_adj =  numbers_at_length_new$C_l_new * numbers_at_length_new$pred_pct_biomass_stand
+
+sum(numbers_at_length_new$C_l)
+sum(numbers_at_length_new$C_l_new)
+sum(numbers_at_length_new$C_l_new_adj)
+write_xlsx(numbers_at_length_new,"numbers_at_length_new.xlsx")
+
 
 ##########
 # Here, execute the catch-per trip file. 

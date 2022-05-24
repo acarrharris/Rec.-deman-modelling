@@ -22,7 +22,7 @@ region1="SO"
 
 
 #Import directed trips file - gives directed trips by regulatory period in 2019
-directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly.xlsx"))                                                                            
+directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_lb.xlsx"))                                                                            
 directed_trips$dtrip=round(directed_trips$dtrip_2019)
 directed_trips= subset(directed_trips, state == state1)
 
@@ -363,18 +363,15 @@ for(d in 1:100) {
   
   param_draws_DE = as.data.frame(1:30000)
   names(param_draws_DE)[names(param_draws_DE) == "1:30000"] = "tripid"
-  
-  param_draws_DE$beta_sqrt_sf_keep = rnorm(30000, mean = 0.807, sd = 0.599)
-  param_draws_DE$beta_sqrt_sf_release = rnorm(30000, mean = 0, sd = 0.317)
-  param_draws_DE$beta_sqrt_bsb_keep = rnorm(30000, mean = 0.239, sd = 0.287)
-  param_draws_DE$beta_sqrt_bsb_release = rnorm(30000, mean = 0, sd = 0.160)
-  param_draws_DE$beta_sqrt_wf_keep = rnorm(30000, mean = 0.379, sd =  0.381)
-  param_draws_DE$beta_sqrt_wf_release = rnorm(30000, mean = 0.064, sd = 0.227)
-  param_draws_DE$beta_opt_out = rnorm(30000, mean = -2.963, sd = 2.448)
-  param_draws_DE$beta_striper_blue = rnorm(30000, mean = 0.645, sd = 1.900)
+  param_draws_DE$beta_sqrt_sf_keep = rnorm(30000, mean = 0.776, sd = 0.516)
+  param_draws_DE$beta_sqrt_sf_release = rnorm(30000, mean = 0, sd = 0.258)
+  param_draws_DE$beta_sqrt_bsb_keep = rnorm(30000, mean = 0.239, sd = 0.311)
+  param_draws_DE$beta_sqrt_bsb_release = rnorm(30000, mean = 0, sd = 0.139)
+  param_draws_DE$beta_sqrt_wf_keep = rnorm(30000, mean = 0.360, sd =  0.251)
+  param_draws_DE$beta_sqrt_wf_release = rnorm(30000, mean = 0.061, sd = 0.220)
+  param_draws_DE$beta_opt_out = rnorm(30000, mean = -2.838, sd = 2.246)
+  param_draws_DE$beta_striper_blue = rnorm(30000, mean = 0.606, sd = 1.752)
   param_draws_DE$beta_cost = rnorm(30000, mean = -0.009, sd = 0)
-  
-  
   param_draws_DE$parameter_draw=d
   param_draws_DE <- param_draws_DE[1:n_drawz, ] 
   utilites_DE[[d]]= param_draws_DE

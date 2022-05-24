@@ -23,7 +23,7 @@ region1="NO"
 
 
 #Import directed trips file - gives directed trips by regulatory period in 2019
-directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly.xlsx"))                                                                            
+directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_lb.xlsx"))                                                                            
 directed_trips$dtrip=round(directed_trips$dtrip_2019)
 directed_trips= subset(directed_trips, state == state1)
 
@@ -368,18 +368,15 @@ for(d in 1:100) {
   
   param_draws_NY = as.data.frame(1:30000)
   names(param_draws_NY)[names(param_draws_NY) == "1:30000"] = "tripid"
-  
-  param_draws_NY$beta_sqrt_sf_keep = rnorm(30000, mean = 0.559, sd = 0.678)
-  param_draws_NY$beta_sqrt_sf_release = rnorm(30000, mean = 0, sd = 0.336)
-  param_draws_NY$beta_sqrt_bsb_keep = rnorm(30000, mean = 0.275, sd = 0.261)
+  param_draws_NY$beta_sqrt_sf_keep = rnorm(30000, mean = 0.535, sd = 0.692)
+  param_draws_NY$beta_sqrt_sf_release = rnorm(30000, mean = 0, sd = 0.358)
+  param_draws_NY$beta_sqrt_bsb_keep = rnorm(30000, mean = 0.273, sd = 0.245)
   param_draws_NY$beta_sqrt_bsb_release = rnorm(30000, mean = 0, sd = 0)
-  param_draws_NY$beta_sqrt_scup_keep = rnorm(30000, mean = 0.075, sd = 0.143)
-  param_draws_NY$beta_sqrt_scup_release = rnorm(30000, mean = 0, sd = 0)
-  param_draws_NY$beta_opt_out = rnorm(30000, mean = -2.641, sd = 2.554)
-  param_draws_NY$beta_striper_blue = rnorm(30000, mean = 1.429, sd = 1.920)
+  param_draws_NY$beta_sqrt_scup_keep = rnorm(30000, mean = 0.078, sd = 0.096)
+  param_draws_NY$beta_sqrt_scup_release = rnorm(30000, mean = 0, sd = 0.077)
+  param_draws_NY$beta_opt_out = rnorm(30000, mean = -2.398, sd = 2.193)
+  param_draws_NY$beta_striper_blue = rnorm(30000, mean = 1.272, sd = 1.652)
   param_draws_NY$beta_cost = rnorm(30000, mean = -0.012, sd = 0)
-  
-  
   param_draws_NY$parameter_draw=d
   param_draws_NY <- param_draws_NY[1:n_drawz, ] 
   
