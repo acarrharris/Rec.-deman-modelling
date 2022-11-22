@@ -23,7 +23,8 @@ region1="NO"
 
 
 #Import directed trips file - gives directed trips by regulatory period in 2019
-directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_lb.xlsx"))                                                                            
+#directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_lb.xlsx")) 
+directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly.xlsx")) 
 directed_trips$dtrip=round(directed_trips$dtrip_2019)
 directed_trips= subset(directed_trips, state == state1)
 

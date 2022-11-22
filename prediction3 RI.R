@@ -24,7 +24,7 @@ region1 <-"NO"
 
 # Input the calibration output which contains the number of choice occasions needed to simulate
 calibration_data  <- data.frame(read_excel("calibration_output_by_period.xlsx"))
-calibration_data  <-subset(calibration_data, state == state1, select=c(period, sim, state, n_choice_occasions))
+calibration_data  <-subset(calibration_data, state == state1 & draw==x, select=c(period, sim, state, n_choice_occasions))
 
 
 # Input the data set containing alternative regulations and directed trips
@@ -45,7 +45,7 @@ levels(periodz)
 
 for(p in levels(periodz)){
   directed_trips_p  <- subset(directed_trips, period == p)
-  n_trips  <- mean(directed_trips_p$dtrip)
+  n_trips  <- mean(directed_trips_p$dtrip_2019)
   #n_draws = min(1000,n_trips*2.5 )
   n_draws = n_drawz
   
@@ -479,5 +479,4 @@ pds_new_all_RI=subset(pds_new_all_RI, select=-c(Group.1, tot_keep_sf_base, tot_r
                                                 tot_keep_bsb_base, tot_rel_bsb_base, tot_sf_catch))
 
 
-write_xlsx(pds_new_all_RI,"pds_new_all_RI_check2.xlsx")
 

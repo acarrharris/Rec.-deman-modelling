@@ -22,7 +22,8 @@ region1="NJ"
 
 
 #Import directed trips file - gives directed trips by regulatory period in 2019
-directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_lb.xlsx"))                                                                            
+#directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_lb.xlsx")) 
+directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly.xlsx")) 
 directed_trips$dtrip=round(directed_trips$dtrip_2019)
 directed_trips= subset(directed_trips, state == state1)
 
@@ -652,6 +653,8 @@ pds_new_all_NJ <-  list.stack(pds_new, fill=TRUE)
 pds_new_all_NJ[is.na(pds_new_all_NJ)] <-  0
 pds_new_all_NJ$state <-  state1
 pds_new_all_NJ$alt_regs <-  0
+pds_new_all_NJ= subset(pds_new_all_NJ, select=-c(Group.1, tot_sf_catch, tot_bsb_catch))
+
 rm(pds_new)
 
 # costs_new_all contain trip outcomes for the baseline period. Will use to calculate welfare changes, 
@@ -671,16 +674,12 @@ sum(pds_new_all_NJ$tot_keep)
 ((1108158.1-sum(pds_new_all_NJ$tot_keep))/1108158.1)*100
 ((13068170-sum(pds_new_all_NJ$tot_rel))/13068170)*100
 
-pds_new_all_NJ$tot_sf_cat=pds_new_all_NJ$tot_keep+pds_new_all_NJ$tot_rel
-((14176328-sum(pds_new_all_NJ$tot_sf_cat))/14176328)*100
 
 
 sum(pds_new_all_NJ$tot_keep_bsb)
 ((123859.8-sum(pds_new_all_NJ$tot_keep_bsb))/123859.8)*100
 ((1936833.9-sum(pds_new_all_NJ$tot_rel_bsb))/1936833.9)*100
 
-pds_new_all_NJ$tot_bsb_cat=pds_new_all_NJ$tot_keep_bsb+pds_new_all_NJ$tot_rel_bsb
-((2060693.6-sum(pds_new_all_NJ$tot_bsb_cat))/2060693.6)*100
 
 
 sum(pds_new_all_NJ$tot_keep_scup)

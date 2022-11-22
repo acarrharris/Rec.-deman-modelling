@@ -93,7 +93,11 @@ ptm <- proc.time()
 
 state_output = data.frame()
 state_cal_output = data.frame()
+state_pred_output = data.frame()
+year_output = data.frame()
 
+
+for (x in 1:30){
 ##########
 # Estimate the catch-per-trip copulas so we don't re-estimate every time
 source("calc_catch_per_trip_copulas.R")
@@ -121,28 +125,35 @@ calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_a
                                                        pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
 
 
-# calibration_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
-#                                                        pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
-#                                                        pds_new_all_MD, pds_new_all_VA))
-
 
 calibration_output_by_period[is.na(calibration_output_by_period)] = 0
+
+# write_xlsx(calibration_output_by_period,"calibration_output_by_period_lb.xlsx")
+# saveRDS(calibration_output_by_period, file = "calibration_output_by_period_lb.rds")
+
+
+calibration_output_by_period$draw = x
+
 write_xlsx(calibration_output_by_period,"calibration_output_by_period.xlsx")
 saveRDS(calibration_output_by_period, file = "calibration_output_by_period.rds")
 
 rm(utilites_MA, utilites_RI, utilites_CT, utilites_NY, utilites_NJ, utilites_DE, utilites_MD, utilites_VA, utilites_NC )
 
-aggregate_calibration_output= subset(calibration_output_by_period, select=-c(state, alt_regs, period))
-aggregate_calibration_output = aggregate(aggregate_calibration_output, by=list(calibration_output_by_period$sim),FUN=sum, na.rm=TRUE)
-write_xlsx(aggregate_calibration_output,"aggregate_calibration_output.xlsx")
+#aggregate_calibration_output= subset(calibration_output_by_period, select=-c(state, alt_regs, period))
+#aggregate_calibration_output = aggregate(aggregate_calibration_output, by=list(calibration_output_by_period$sim),FUN=sum, na.rm=TRUE)
 
-#calibration_output_by_period$draw = x
+#write_xlsx(aggregate_calibration_output,"aggregate_calibration_output_lb.xlsx")
+#write_xlsx(aggregate_calibration_output,"aggregate_calibration_output.xlsx")
 state_cal_output =rbind.fill(state_cal_output, calibration_output_by_period)
-# 
-# }
-# #write_xlsx(state_output,"state_output_nostop_2017test.xlsx")
-# 
-# write_xlsx(state_cal_output,"state_cal_output_all.xlsx")
+
+}
+write_xlsx(state_cal_output,"calibration_output_by_period.xlsx")
+
+
+
+
+
+#write_xlsx(state_cal_output,"state_cal_output_all.xlsx")
 
 
 #Apply the calibration estimates of total catch to the catch-at-length distribution used in the assessment 
@@ -150,29 +161,29 @@ state_cal_output =rbind.fill(state_cal_output, calibration_output_by_period)
 # tot_sf_rel = aggregate_calibration_output$tot_rel
 # tot_sf_catch = tot_sf_keep+tot_sf_rel
 # 
-# assment_CAL = data.frame(read_excel("assessment_catch_at_length.xlsx"))                                                                            
+# assment_CAL = data.frame(read_excel("assessment_catch_at_length.xlsx"))
 # assment_CAL$calibration_keep_at_length=assment_CAL$ab1_prop*tot_sf_keep
 # assment_CAL$calibration_release_at_length=assment_CAL$b2_prop*tot_sf_rel
 # 
 # calibration_catch_at_length= subset(assment_CAL, select=c(l_in_bin, calibration_keep_at_length, calibration_release_at_length))
-# write_xlsx(calibration_catch_at_length,"calibration_catch_at_length.xlsx")
+# write_xlsx(calibration_catch_at_length,"calibration_catch_at_length_lb.xlsx")
 
 #save calibration output objects
 # saveRDS(calibration_output_by_period,file = "calibration_output_by_period.rds")
 # saveRDS(aggregate_calibration_output,file = "aggregate_calibration_output.rds")
-# #saveRDS(calibration_catch_at_length, file = "calibration_catch_at_length.rds")
-# 
-costs_all <- NULL
-costs_all[[1]] <- costs_new_all_MA
-costs_all[[2]] <- costs_new_all_RI
-costs_all[[3]] <- costs_new_all_CT
-costs_all[[4]] <- costs_new_all_NY
-costs_all[[5]] <- costs_new_all_NJ
-costs_all[[6]] <- costs_new_all_DE
-costs_all[[7]] <- costs_new_all_MD
-costs_all[[8]] <- costs_new_all_VA
-costs_all[[9]] <- costs_new_all_NC
-saveRDS(costs_all, file = "costs_all_1000.rds")
+# saveRDS(calibration_catch_at_length, file = "calibration_catch_at_length_lb.rds")
+# # 
+# costs_all <- NULL
+# costs_all[[1]] <- costs_new_all_MA
+# costs_all[[2]] <- costs_new_all_RI
+# costs_all[[3]] <- costs_new_all_CT
+# costs_all[[4]] <- costs_new_all_NY
+# costs_all[[5]] <- costs_new_all_NJ
+# costs_all[[6]] <- costs_new_all_DE
+# costs_all[[7]] <- costs_new_all_MD
+# costs_all[[8]] <- costs_new_all_VA
+# costs_all[[9]] <- costs_new_all_NC
+# saveRDS(costs_all, file = "costs_all_1000_lb.rds")
 # 
 # saveRDS(costs_new_all_MA, file = "costs_new_all_MA.rds")
 # saveRDS(costs_new_all_RI, file = "costs_new_all_RI.rds")
@@ -187,31 +198,37 @@ saveRDS(costs_all, file = "costs_all_1000.rds")
 
 
 # 
-param_draws_all <- NULL
-param_draws_all[[1]] <- param_draws_MA
-param_draws_all[[2]] <- param_draws_RI
-param_draws_all[[3]] <- param_draws_CT
-param_draws_all[[4]] <- param_draws_NY
-param_draws_all[[5]] <- param_draws_NJ
-param_draws_all[[6]] <- param_draws_DE
-param_draws_all[[7]] <- param_draws_MD
-param_draws_all[[8]] <- param_draws_VA
-param_draws_all[[9]] <- param_draws_NC
-saveRDS(param_draws_all, file = "param_draws_all.rds")
+# param_draws_all <- NULL
+# param_draws_all[[1]] <- param_draws_MA
+# param_draws_all[[2]] <- param_draws_RI
+# param_draws_all[[3]] <- param_draws_CT
+# param_draws_all[[4]] <- param_draws_NY
+# param_draws_all[[5]] <- param_draws_NJ
+# param_draws_all[[6]] <- param_draws_DE
+# param_draws_all[[7]] <- param_draws_MD
+# param_draws_all[[8]] <- param_draws_VA
+# param_draws_all[[9]] <- param_draws_NC
+# saveRDS(param_draws_all, file = "param_draws_all_lb.rds")
 
 
 ##########  
 
-# regs <- c("plus1", "minus1", "minus2", "plus1_bag2", "minus1_bag2", "minus2_bag2")
+
+#years <- c("2015", "2016", "2017", "2018", "2020", "2021")
+#years <- c("2018", "2020")
+
+state_pred_output = data.frame()
+years <- c("2015", "2016", "2017", "2018", "2020", "2021")
+
 # regs <- c("minus1")
 
-#for (r in regs){
-#  regulation=r
-
+for (x in 1:30){
+for (y in years){
+year <- y
+year <-"2018"
 # 
- state_output = data.frame()
- for (x in 1:30){
-    regulation="2016_test"
+ #for (x in 1:30){
+    #regulation="2015"
   
   ##########  
   # Input new population numbers-at-age distribution (numbers_at_age_YYYY) in the following script to create population adjusted 
@@ -232,10 +249,12 @@ saveRDS(param_draws_all, file = "param_draws_all.rds")
   #numbers_at_age = data.frame(read_excel("numbers_at_age_2018.xlsx"))
   #numbers_at_age$Na=numbers_at_age$Na*1000
   
-  #2019 numbers (median)
-   numbers_at_age = data.frame(read_excel("numbers_at_age_2019.xlsx"))
-   numbers_at_age$Na=numbers_at_age$Na*1000
-  
+  # #2019 numbers (median)
+       #numbers_at_age = data.frame(read_excel("numbers_at_age_2019_new.xlsx"))
+        #numbers_at_age$Na=numbers_at_age$Na*1000
+      #  sum(numbers_at_age$Na) 
+       
+     # 
   #2022 numbers (median)
   # numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_median.xlsx"))
   
@@ -243,7 +262,18 @@ saveRDS(param_draws_all, file = "param_draws_all.rds")
   # numbers_at_age = data.frame(read_excel("F2021_2019_ALLPROJ_2022_STOCKN_sample100.xlsx"))
   # numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==x)
   
+  #2015 numbers (draw from a sample of 100) - use this to incorporate uncertainty 
+  # numbers_at_age = data.frame(read_excel("MCMC_2015_sample100.xlsx"))
+  # numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==x)
 
+#numbers_at_age = data.frame(read_excel("new_MCMC_2018_sample100.xlsx"))
+#numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==1)
+  
+numbers_at_age = data.frame(read_excel(paste0("new_MCMC_",year,"_sample100.xlsx")))
+  numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==x)
+  
+  # numbers_at_age = data.frame(read_excel("MCMC_2017_sample100.xlsx"))
+  # numbers_at_age = subset(numbers_at_age, numbers_at_age$draw==x
   
   source("CAL given stock structure by state.R")
   
@@ -259,45 +289,32 @@ saveRDS(param_draws_all, file = "param_draws_all.rds")
   #directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_19_16.xlsx"))
   #directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_test.xlsx"))
   #2018 regs
-  directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_19_16.xlsx"))
-  
+  #directed_trip_alt_regs=data.frame(read_excel("directed_trips_regions_bimonthly_19_15.xlsx"))
+  directed_trip_alt_regs=data.frame(read_excel( paste0("directed_trips_regions_bimonthly_19_",year,".xlsx")))
   directed_trip_alt_regs$dtrip_2019=round(directed_trip_alt_regs$dtrip_2019)
 
 
   source("prediction3 MA.R")
-  state1
   source("prediction3 RI.R")
-  state1
   source("prediction3 CT.R")
-  state1
   source("prediction3 NY.R")
-  state1
   source("prediction3 NJ.R")
-  state1
   source("prediction3 DE.R")
-  state1
   source("prediction3 MD.R")
-  state1
   source("prediction3 VA.R")
-  state1
   source("prediction3 NC.R")
   
 
   prediction_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
                                                         pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
                                                         pds_new_all_MD, pds_new_all_VA, pds_new_all_NC))
-  # prediction_output_by_period = as.data.frame(bind_rows(pds_new_all_MA, pds_new_all_RI, pds_new_all_CT,
-  #                                                       pds_new_all_NY, pds_new_all_NJ, pds_new_all_DE,
-  #                                                       pds_new_all_MD, pds_new_all_VA))
+
   
   prediction_output_by_period[is.na(prediction_output_by_period)] = 0
   write_xlsx(prediction_output_by_period,"prediction_output_by_period.xlsx")
   
 
-  
-  # state_prediction_output= subset(prediction_output_by_period, select=c(tot_keep, tot_rel,tot_keep_bsb, tot_rel_bsb,tot_keep_scup, tot_rel_scup,
-  #                                                                       tot_keep_wf, tot_rel_wf, tot_keep_rd, tot_rel_rd, observed_trips,
-  #                                                                       n_choice_occasions, period, state, change_CS))
+
   state_prediction_output=prediction_output_by_period
 
   
@@ -312,15 +329,32 @@ saveRDS(param_draws_all, file = "param_draws_all.rds")
   state_names = state_names[!duplicated(state_names), ]
   state_prediction_output1 =  merge(state_prediction_output1,state_names,by="state1", all.x=TRUE, all.y=TRUE)
   
-  state_prediction_output1$draw = x
+  state_prediction_output1$draw <- x
+  state_prediction_output1$year <- y
   
   
-  state_output =rbind.fill(state_output, state_prediction_output1)
-  state_output$reg=regulation
+  state_pred_output <- rbind.fill(state_pred_output, state_prediction_output1)
 
+  #year_output <- rbind.fill(year_output, state_pred_output)
+  
  }
-#write_xlsx(state_output,"state_output_nostop_2017test.xlsx")
-write_xlsx(state_output,paste0("state_pred_output_all",regulation,".xlsx"))
+}
+write_xlsx(state_pred_output,"state_output_new_pop_ns_15_21.xlsx")
+#write_xlsx(state_pred_output,"state_output_new_pop_ns_15_21_avg_selectivity.xlsx")
+
+#write_xlsx(state_pred_output,paste0("state_output_new_pop_ns",year,".xlsx"))
+
+
+
+# Stop the clock
+proc.time() - ptm
+
+
+
+
+
+
+
 
 
 #write_xlsx(state_cal_output,"state_cal_output_all.xlsx")

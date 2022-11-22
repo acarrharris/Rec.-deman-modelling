@@ -22,7 +22,9 @@ region1="NO"
 
 
 #Import directed trips file - gives directed trips by regulatory period in 2019
-directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_lb.xlsx"))                                                                            
+#directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly_lb.xlsx")) 
+directed_trips = data.frame(read_excel("directed_trips_regions_bimonthly.xlsx"))                                                                            
+
 directed_trips$dtrip=round(directed_trips$dtrip_2019)
 directed_trips= subset(directed_trips, state == state1)
 
@@ -463,6 +465,9 @@ for(p in levels(periodz)){
     
     #Now put these three values in the same column, exponentiate, and caluculate their sum (vA_col_sum)
     mean_trip_data$vA[mean_trip_data$alt!=1] <- 0
+    mean_trip_data$vA_striper_blue[mean_trip_data$alt!=2] <- 0
+    mean_trip_data$vA_optout[mean_trip_data$alt!=3] <- 0
+    
     mean_trip_data$vA_row_sum = rowSums(mean_trip_data[,c("vA", "vA_striper_blue","vA_optout")])
     mean_trip_data$vA_row_sum = exp(mean_trip_data$vA_row_sum)
     mean_trip_data$vA_col_sum = ave(mean_trip_data$vA_row_sum, mean_trip_data$tripid, FUN = sum)

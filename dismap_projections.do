@@ -1,7 +1,10 @@
 
+
+
+
 clear 
 set obs 2
-gen year=2020 if _n==1
+gen year=2019 if _n==1
 replace year=2060 if year==.
 
 tsset year
@@ -12,7 +15,19 @@ save `new', replace
 
 cd "C:\Users\andrew.carr-harris\Desktop\Git\Rec.-deman-modelling"
 import excel using "pct_biomass_region_dismap.xlsx", clear first 
+/*
+tsset year
+tsfill, full
 
+su south if inlist(year, 2016, 2018)
+replace south=`r(mean)' if year==2017
+
+su nj if inlist(year, 2016, 2018)
+replace nj=`r(mean)' if year==2017
+
+su north if inlist(year, 2016, 2018)
+replace north=`r(mean)' if year==2017
+*/
 append using `new'
 
 reg south_pct_biomass year if year>=1999
@@ -49,89 +64,29 @@ replace  south_pct_biomass_predict=south_pct_biomass_predict/100
 replace  north_pct_biomass_predict=north_pct_biomass_predict/100
 replace  nj_pct_biomass_predict=nj_pct_biomass_predict/100		
 
-gen N_l_2019=154821261
-gen south_N_l=N_l*south_pct_biomass_predict
-gen nj_N_l=N_l*nj_pct_biomass_predict
-gen north_N_l=N_l*north_pct_biomass_predict
-
-format south_N_l nj_N_l north_N_l %13.0gc
-
-egen sum_N_l=rowtotal(south_N_l nj_N_l north_N_l) 
-format  sum_N_l N_l %13.0gc
+egen sum=rowtotal(south_pct_biomass_predict north_pct_biomass_predict nj_pct_biomass_predict)
 
 
-local vars south nj north
-foreach v of local vars{
-	su `v'_N_l if year==2019
-	gen normalize_pred_`v'= `v'_N_l/`r(mean)'
-}
-
-egen norm_rowtot=rowtotal(normalize_pred_south normalize_pred_nj normalize_pred_north)
-
-
-
-local vars south nj north
-foreach v of local vars{
-gen abs_
-
-}
-format stand_pred_south stand_pred_nj stand_pred_north %13.0gc
-egen rowtot=rowtotal(stand_pred_south stand_pred_nj stand_pred_north)
-format rowtot %13.0gc
-
-local vars south nj north
-foreach v of local vars{
-	su stand_pred_`v' if year==2019
-	gen stand_pred_`v'_new=  stand_pred_`v'/`r(mean)'
-}
-
-
-
+/*
 local vars south nj north
 foreach v of local vars{
 	su `v'_pct_biomass_predict if year==2019
-	gen stand_pred_`v'= `r(mean)'*N_l
+	gen norm_pred_`v'= `v'_pct_biomass_predict/`r(mean)'
 }
-format stand_pred_south stand_pred_nj stand_pred_north %13.0gc
-egen rowtot1=rowtotal(stand_pred_south_new stand_pred_nj_new stand_pred_north_new)
-format rowtot %13.0gc
-
-egen sum =
-
-local vars south nj north
-foreach v of local vars{
-	su `v'_pct_biomass_predict if year==2019
-	gen stand_pred_`v'= `v'_pct_biomass_predict/`r(mean)'
-}
-
-
-egen sumperc=rowtotal(south_pct_biomass_predict north_pct_biomass_predict nj_pct_biomass_predict)
-
-
-
-/*				  
-replace  south_pct_biomass_predict=south_pct_biomass_predict/100
-replace  north_pct_biomass_predict=north_pct_biomass_predict/100
-replace  nj_pct_biomass_predict=nj_pct_biomass_predict/100			
-
-replace south_pct_biomass_predict=round(south_pct_biomass_predict, .001)
-replace north_pct_biomass_predict=round(north_pct_biomass_predict, .001)
-replace nj_pct_biomass_predict=round(nj_pct_biomass_predict, .001)
 */
 
-egen sum_predict=rowtotal(south_pct_biomass_predict nj_pct_biomass_predict north_pct_biomass_predict)
-drop sum*
 rename south_pct_biomass_predict predict_south
 rename nj_pct_biomass_predict predict_nj
 rename north_pct_biomass_predict predict_north
 
 
-keep year stand*  
-reshape long  stand_pred_, i(year) j(reg) string
+keep year predict*  
+duplicates drop 
+reshape long  predict_, i(year) j(reg) string
 
 expand 4 if reg=="north"
 expand 4 if reg=="south"
-sort year reg stand
+sort year reg predict_
 
 bysort year reg: gen tab=_n
 gen state="NJ" if reg=="nj"
@@ -145,13 +100,168 @@ replace state="VA" if reg=="south" & tab==3
 replace state="NC" if reg=="south" & tab==4
 drop tab reg
 
-rename stand pred_pct_biomass_stand
-export excel using "projected_biomass_by_region.xlsx", replace firstrow(var)
+rename predict prediction
+sort year state
+replace pred=pred if state=="NJ"
+replace pred=pred/4 if state!="NJ"
+
+keep if year>=2015
+export excel using "projected_biomass_prop_by_state.xlsx", replace firstrow(var)
+
+tempfile base_props
+save `base_props', replace 
 
 
+global fluke_catch
+forv y=2019(1)2060{
+
+u `base_props', clear 
+
+keep if year==`y'
+
+tempfile base_props2
+save `base_props2', replace  
+
+cd "C:\Users\andrew.carr-harris\Desktop\Git\Rec.-deman-modelling"
 import excel using "numbers_at_length_new.xlsx", clear first 
+
+drop prediction year 
+merge m:1 state using `base_props2', nogen
+
+replace pred=pred if state=="NJ"
+replace pred=pred/4 if state!="NJ"
+
+gen N_l_prop_new=pred*N_l 
+
+tabstat N_l_prop, stat(sum) by(state) format(%12.0gc)
+tabstat N_l_prop_new, stat(sum) by(state) format(%12.0gc)
+
+preserve 
+collapse (mean) prediction, by(state l_in)
+tempfile new
+save `new', replace
+restore 
+
+collapse (sum) C_l N_l_prop N_l_prop_new, by(l_in state year) 
+merge 1:1 state l_in using `new', nogen
+
+order state l_in C_l N_l_prop prediction N_l_prop_new
+
+
+gen selectivity= C_l/N_l_prop
+gen C_l_new_adj= selectivity*N_l_prop_new
+
+ds state year, not
+format `r(varlist)' %13.0gc
+
+
+tempfile fluke_catch`y'
+save `fluke_catch`y'', replace
+global fluke_catch "$fluke_catch "`fluke_catch`y''" " 
+}
+
+clear
+dsconcat $fluke_catch
+
+tabstat C_l_new_adj, stat(sum) by(year)  format(%13.0gc)
+tabstat N_l_prop_new, stat(sum) by(year)  format(%13.0gc)
+
+
+collapse (sum)  C_l C_l_new_adj N_l_prop N_l_prop_new, by(state year) 
+gen biomass_adj_scalar=C_l_new_adj/C_l
+gen catch_check=C_l*biomass_adj_scalar
+format  catch_check %13.0gc
+
+keep state year biomass_adj_scalar
+replace biomass_adj_scalar=1 if year==2019
+
+sort year state
+cd "C:\Users\andrew.carr-harris\Desktop\Git\Rec.-deman-modelling"
+export excel using "biomass_adj_scalar.xlsx", replace firstrow(variables)
+
+
+format C_l_new_adj %13.0gc
+format C_l_new %13.0gc
+
+gen catch_exp_factor_pop=C_l_new_adj/C_l_new
+
+
+
+gen base_ratio1= C_l_new/N_l_prop
+
+gen C_l_new_adj=base_ratio*N_l_prop_new
+
+gen ratio=N_l_prop_new/N_l_prop
+
+gen C_l_new_adj=N_l_prop_new*E*q
 tabstat C_l, stat(sum) by(state) format(%12.0gc)
 tabstat C_l_new, stat(sum) by(state) format(%12.0gc)
+tabstat C_l_new_adj, stat(sum) by(state) format(%12.0gc)
+
+gen reg="SO" if inlist(state, "DE", "MD", "VA", "NC")
+replace reg=" NO"  if inlist(state, "MA", "RI", "CT", "NY")
+replace reg=" NJ"  if inlist(state, "NJ")
+
+tabstat C_l, stat(sum) by(reg) format(%12.0gc)
+tabstat N_l_prop, stat(sum) by(reg) format(%13.0gc)
+tabstat N_l_prop_new, stat(sum) by(reg) format(%13.0gc)
+
+tabstat N_l_prop_new, stat(sum) by(reg) format(%13.0gc)
+
+egen sum_C_l_new_state=sum(C_l_new), by(state)
+gen C_l_new_adj_state=ratio*sum_C_l_new_state
+gen diff=C_l_new_adj_state-sum_C_l_new_state
+
+distinct l_in 
+gen C_l_new_adj1= C_l_new+(diff/`r(ndistinct)' )
+
+
+
+gen extra fish=
+gen C_l_new_adj=C_l_new*ratio
+ 
+
+
+drop sum*
+drop ratio
+gen C_l_new_adj=N_l_prop_new*E*q
+
+
+
+
+
+
+drop sum_C_l-C_l_new_prop_adj
+/*
+replace prediction=.6 if reg=="NO"
+replace prediction=.2 if reg=="NJ"
+replace prediction=.2 if reg=="SO"
+*/
+egen sum_C_l_base=sum(C_l), by(reg)
+
+egen sum_C_l_reg=sum(C_l_new), by(reg)
+egen sum_C_l=sum(C_l_new)
+gen predicted_regional_catch=sum_C_l*prediction
+
+
+format predicted_regional_catch sum_C_l_reg sum_C_l sum_C_l_base %12.0gc
+
+gen N_l_new_prop=N_l*prediction
+format N_l_new_prop %12.0gc
+
+
+su N_l_prop
+return list
+su N_l_new_prop
+return list
+
+gen C_l_new_adj=N_l_new_prop*E*q
+tabstat C_l_new_adj, stat(sum) by(state) format(%12.0gc)
+
+tabstat C_l_new, stat(sum) by(state) format(%12.0gc)
+tabstat C_l, stat(sum) by(state) format(%12.0gc)
+
+
 tabstat C_l_new_adj, stat(sum) by(state) format(%12.0gc)
 
 sort state l_

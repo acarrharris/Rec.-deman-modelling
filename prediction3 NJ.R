@@ -24,7 +24,7 @@ region1 <-"NJ"
 
 # Input the calibration output which contains the number of choice occasions needed to simulate
 calibration_data  <- data.frame(read_excel("calibration_output_by_period.xlsx"))
-calibration_data  <- subset(calibration_data, state == state1, select=c(period, sim, state, n_choice_occasions))
+calibration_data  <- subset(calibration_data, state == state1 & draw==x, select=c(period, sim, state, n_choice_occasions))
 
 
 # Input the data set containing alterntative regulations and directed trips
@@ -323,7 +323,7 @@ for(p in levels(periodz)){
   # Merge the prediction year data to the calibration data
   pds <- subset(pds_all, period==p)
   
-  cost_data <- subset(costs_new_all_NJ, period == p, select=-c(period))
+  cost_data <- subset(costs_new_all_NJ, period == p, select=-c(period, tot_sf_catch))
   trip_data <-  merge(pds,cost_data,by=c("tripid", "catch_draw"))
   trip_data[is.na(trip_data)] <- 0
   
@@ -463,7 +463,7 @@ for(p in levels(periodz)){
     
     aggregate_trip_data$sim <- d
     
-    parameter_draws[[d]] <- aggregate_trip_data
+    parameter_draws[[p]] <- aggregate_trip_data
     
   }
   
@@ -484,6 +484,7 @@ pds_new_all_NJ <- list.stack(pds_new, fill=TRUE)
 pds_new_all_NJ[is.na(pds_new_all_NJ)] <- 0
 pds_new_all_NJ$state <- state1
 pds_new_all_NJ$alt_regs <- 1
+ls(pds_new_all_NJ)
 pds_new_all_NJ <- subset(pds_new_all_NJ, select=-c(Group.1, tot_keep_sf_base, tot_rel_sf_base, 
                                                 tot_keep_scup_base, tot_rel_scup_base, 
                                                 tot_keep_wf_base, tot_rel_wf_base, 

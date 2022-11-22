@@ -28,7 +28,7 @@ region1 <- "NO"
 #calibration_data = subset(calibration_data, state == state1, select=c(period, sim, state, n_choice_occasions))
 
 calibration_data <- data.frame(read_excel("calibration_output_by_period.xlsx")) %>%
-                    filter(state == state1) %>%
+                    filter(state == state1 & draw==x) %>%
                     select(period, sim, state, n_choice_occasions)
 
 
@@ -485,7 +485,6 @@ pds_new_all_MA=subset(pds_new_all_MA, select=-c(Group.1, tot_keep_sf_base, tot_r
                                                 tot_keep_scup_base, tot_rel_scup_base, 
                                                 tot_keep_bsb_base, tot_rel_bsb_base, tot_sf_catch))
 
-write_xlsx(pds_new_all_MA,"pds_new_all_MA_check2.xlsx")
 
 
 

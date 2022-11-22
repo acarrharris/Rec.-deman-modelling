@@ -24,7 +24,7 @@ region1 <-"SO"
 
 # Input the calibration output which contains the number of choice occasions needed to simulate
 calibration_data <- data.frame(read_excel("calibration_output_by_period.xlsx"))
-calibration_data <- subset(calibration_data, state == state1, select=c(period, sim, state, n_choice_occasions))
+calibration_data <- subset(calibration_data, state == state1 & draw==x, select=c(period, sim, state, n_choice_occasions))
 
 
 # Input the data set containing alterntative regulations and directed trips

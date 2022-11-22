@@ -21,6 +21,8 @@ pkgs_to_use <- c("tidyr",
                  #"univariateML",
                  #"logspline",
                  "readr",
+                 "readxl",
+                 "writexl",
                  "data.table")
 #install.packages(setdiff(pkgs_to_use, rownames(installed.packages())))  
 lapply(pkgs_to_use, library, character.only = TRUE)
@@ -81,50 +83,50 @@ source("CAL given stock structure by state.R")
 #catch data
 sf_catch_data_ma <- readRDS("predicted_catch_MA.rds") %>% 
   tibble() %>% 
-  rename(tot_sf_catch = sf_t_nb,
+  dplyr::rename(tot_sf_catch = sf_t_nb,
          tot_bsb_catch = bsb_t_nb) %>%
   I()
 sf_catch_data_ri <- readRDS("predicted_catch_RI.rds") %>% 
   tibble() %>% 
-  rename(tot_sf_catch = sf_t_nb,
+  dplyr::rename(tot_sf_catch = sf_t_nb,
          tot_bsb_catch = bsb_t_nb) %>%
   I()
 sf_catch_data_ct <- readRDS("predicted_catch_CT.rds") %>% 
   tibble() %>% 
-  rename(tot_sf_catch = sf_t_nb,
+  dplyr::rename(tot_sf_catch = sf_t_nb,
          tot_bsb_catch = bsb_t_nb) %>%
   I()
 
 sf_catch_data_ny <- readRDS("predicted_catch_NY.rds") %>% 
   tibble() %>% 
-  rename(tot_sf_catch = sf_t_nb,
+  dplyr::rename(tot_sf_catch = sf_t_nb,
          tot_bsb_catch = bsb_t_nb) %>%
   I()
 sf_catch_data_nj <- readRDS("predicted_catch_NJ.rds") %>% 
   tibble() %>% 
-  rename(tot_sf_catch = sf_t_nb,
+  dplyr::rename(tot_sf_catch = sf_t_nb,
          tot_bsb_catch = bsb_t_nb) %>%
   I()
 sf_catch_data_de <- readRDS("predicted_catch_DE.rds") %>% 
   tibble() %>% 
-  rename(tot_sf_catch = sf_t_nb,
+  dplyr::rename(tot_sf_catch = sf_t_nb,
          tot_bsb_catch = bsb_t_nb) %>%
   I()
 
 sf_catch_data_md <- readRDS("predicted_catch_MD.rds") %>% 
   tibble() %>% 
-  rename(tot_sf_catch = sf_t_nb,
+  dplyr::rename(tot_sf_catch = sf_t_nb,
          tot_bsb_catch = bsb_t_nb) %>%
   I()
 sf_catch_data_va <- readRDS("predicted_catch_VA.rds") %>% 
   tibble() %>% 
-  rename(tot_sf_catch = sf_t_nb,
+  dplyr::rename(tot_sf_catch = sf_t_nb,
          tot_bsb_catch = bsb_t_nb) %>%
   I()
 
 sf_catch_data_nc <- readRDS("predicted_catch_NC.rds") %>% 
   tibble() %>% 
-  rename(tot_sf_catch = sf_t_nb,
+  dplyr::rename(tot_sf_catch = sf_t_nb,
          tot_bsb_catch = bsb_t_nb) %>%
   I()
 
@@ -190,7 +192,8 @@ params <- list(state1 = c("MA","RI","CT","NY","NJ","DE","MD","VA", "NC"),
 #                sf_catch_data_all = list(sf_catch_data_nj))
 
 #source("prediction-all.R")
-source("prediction-vec.R")
+#source("prediction-vec.R")
+source("prediction-vec-sim-GF.R")
 
 # pds_new_all_MA$draw = s
 # 
@@ -205,7 +208,7 @@ set.seed(1989)
 simkeep <- NULL
 simrel <- NULL
 simagg <- NULL
-for (jsim in 1:2) {
+#for (jsim in 1:2) {
   ##########  need to add link to OM scenario regulations
   
   #params$dchoose <- rep(sample(1:1000,1),9)

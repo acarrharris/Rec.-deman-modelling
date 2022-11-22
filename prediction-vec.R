@@ -13,8 +13,8 @@
 # 2) Dataset containing the alternative regulations to be imposed: directed_trips_region - alternative regs test.xlsx
 # 3) Abundance- and size-adjusted catch-at-length for summer flounder. This is an output file from the script catch at length given stock structure - prediction.R
 # 
-predict_rec_catch <- function(state1 = "NJ",
-                              region1 = "NJ",
+predict_rec_catch <- function(state1 = "MA",
+                              region1 = "NO",
                               calibration_data_table = NULL,
                               directed_trips_table = NULL,
                               size_data_read = NULL,
@@ -25,17 +25,17 @@ predict_rec_catch <- function(state1 = "NJ",
                               dchoose = 1) {
   
   
-  #   #MA test vals for running through function directly
-  # state1 = "MA"
-  # region1 = "NO"
-  # calibration_data_table = calibration_data_table
-  # directed_trips_table = directed_trips_table
-  # size_data_read = size_data_read
-  # param_draws_MA = param_draws_all[[1]]
-  # costs_new_all_MA = costs_new[[1]]
-  # sf_catch_data_all = sf_catch_data_ma
-  # prop_bsb_keep = 1-0.53
-  # dchoose = 1
+    #MA test vals for running through function directly
+  state1 = "MA"
+  region1 = "NO"
+  calibration_data_table = calibration_data_table
+  directed_trips_table = directed_trips_table
+  size_data_read = size_data_read
+  param_draws_MA = param_draws_all[[1]]
+  costs_new_all_MA = costs_new[[1]]
+  sf_catch_data_all = sf_catch_data_ma
+  prop_bsb_keep = 1-0.53
+  dchoose = 1
   
   # 
   # state1 = "NC"
@@ -740,3 +740,4 @@ predict_rec_catch <- function(state1 = "NJ",
   
   #end function
 }
+#pds_new_all_MA<-as.data.frame(pds_new_all_MA)

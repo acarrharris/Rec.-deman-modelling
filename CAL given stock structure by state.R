@@ -34,7 +34,7 @@ numbers_at_length$N_l <- numbers_at_length$proportion*numbers_at_length$Na
 numbers_at_length <- aggregate(numbers_at_length, by=list(numbers_at_length$l_in_bin),FUN=sum, na.rm=TRUE)
 numbers_at_length <-subset(numbers_at_length, select=c(Group.1,N_l))
 names(numbers_at_length)[names(numbers_at_length) == "Group.1"] <- "l_in_bin"
-
+sum(numbers_at_length$N_l)
 
 
 
@@ -43,202 +43,68 @@ numbers_at_length$l_in_bin <- round(numbers_at_length$l_in_bin/2.54)
 numbers_at_length <- aggregate(numbers_at_length, by=list(numbers_at_length$l_in_bin),FUN=sum, na.rm=TRUE)
 numbers_at_length <-subset(numbers_at_length, select=c(Group.1,N_l))
 names(numbers_at_length)[names(numbers_at_length) == "Group.1"] <- "l_in_bin"
+numbers_at_length$l_in_bin[numbers_at_length$l_in_bin==32] <- 31
+numbers_at_length <- aggregate(numbers_at_length, by=list(numbers_at_length$l_in_bin),FUN=sum, na.rm=TRUE)
+numbers_at_length <-subset(numbers_at_length, select=c(Group.1,N_l))
+names(numbers_at_length)[names(numbers_at_length) == "Group.1"] <- "l_in_bin"
 
-
-numbers_at_length2 <- data.frame(read_excel("numbers_at_length_state_2019.xlsx"))
+sum(numbers_at_length$N_l) 
+#numbers_at_length2 <- data.frame(read_excel("numbers_at_length_state_2019.xlsx"))
 
 
 
 #Translate numbers from 1,000's of fish
 #numbers_at_length$N_l=numbers_at_length$N_l*1000
-sum(numbers_at_length$N_l)
+#sum(numbers_at_length$N_l)
 
 
 # Import and merge the selectivity data to this file 
+#selectivity <- data.frame(read_excel("rec_selectivity_by_state_cdf_star_raw_18_19_average.xlsx"))
 selectivity <- data.frame(read_excel("rec_selectivity_by_state_cdf_star_raw_18_19.xlsx"))
-selectivity <-subset(selectivity, select=c(l_in_bin, state, q, E, C_l))
+#selectivity <-subset(selectivity, select=c(l_in_bin, state, q, E, C_l, N_l_2019))
 
 numbers_at_length_new <-  merge(selectivity,numbers_at_length,by=c("l_in_bin"),  all.x=TRUE, all.y=TRUE)
 
-#Replace N_l with estimated proportions in the baseline year
-
-numbers_at_length_new<-na.omit(numbers_at_length_new)
-numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "MA"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "MA"]*0.6717499
-numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "RI"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "RI"]*0.6717499
-numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "CT"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "CT"]*0.6717499
-numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "NY"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "NY"]*0.6717499
-numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "NJ"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "NJ"]*0.1826126
-numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "DE"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "DE"]*0.1456376
-numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "MD"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "MD"]*0.1456376
-numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "VA"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "VA"]*0.1456376
-numbers_at_length_new$N_l_prop[numbers_at_length_new$state == "NC"] <- numbers_at_length_new$N_l[numbers_at_length_new$state == "NC"]*0.1456376
 
 
 
-#numbers_at_length_new =  merge(selectivity,numbers_at_length2,by=c("l_in_bin", "state"),  all.x=TRUE, all.y=TRUE)
+#####biomass shift scenarios#####
+
+# #Import the projected proportion of biomass in each state
+# state_biomass_proportions <- data.frame(read_excel("projected_biomass_prop_by_state.xlsx"))
+# #saveRDS(state_biomass_proportions, file = "state_biomass_proportions.rds")
+# 
+# #If we are not analyzing a biomass shift scenario, keep the baseline year 2019 proportions. 
+# state_biomass_proportions <-subset(state_biomass_proportions, year==2019)
+# 
+# 
+# #If we are analyzing the biomass shift scenario, keep the year y of (2020-2060)
+# #state_biomass_proportions <-subset(state_biomass_proportions, year==2017)
+# 
+# 
+# #Merge the biomass proportions data to the numbers_at_length_new 
+# numbers_at_length_new <-  merge(numbers_at_length_new,state_biomass_proportions,by=c("state"),  all.x=TRUE, all.y=TRUE)
+# 
+# #Replace N_l with estimated proportions in year y 
+# numbers_at_length_new = numbers_at_length_new %>% 
+#   mutate(N_l = N_l*prediction)
+
+#Now numbers-at-length available to each state reflect either the no-shift scenario (year==2019), or
+#under a biomass shift scenario (year==y)
+###########
+
+
 numbers_at_length_new <- subset(numbers_at_length_new, N_l!=0 & state!=0)
-
-sum(numbers_at_length_new$N_l_prop)
 
 
 # Create catch-at-length based on the new numbers-at-length
 numbers_at_length_new$q <- as.numeric(numbers_at_length_new$q)
 
-numbers_at_length_new$C_l_new <- (numbers_at_length_new$q)*(numbers_at_length_new$N_l_prop)*(numbers_at_length_new$E)
+#numbers_at_length_new$C_l_new <- (numbers_at_length_new$q)*(numbers_at_length_new$N_l)*(numbers_at_length_new$E)
+numbers_at_length_new$C_l_new <- (numbers_at_length_new$q)*(numbers_at_length_new$N_l)
+
 sum(numbers_at_length_new$C_l_new)
 sum(numbers_at_length_new$C_l)
-
-
-
-#write_xlsx(numbers_at_length_new,"numbers_at_length_new.xlsx")
-
-
-
-
-####Multiply the projected numbers-at-length by the biomass accessibility ratio###
-#Input the standared percent biomass predictions
-biomass_distn <- data.frame(read_excel("projected_biomass_by_region.xlsx"))
-biomass_distn <- subset(biomass_distn, year==2020)
-
-#Merge to the numbers_at_length_new file 
-numbers_at_length_new <-  merge(numbers_at_length_new,biomass_distn,by="state", all.x=TRUE, all.y=TRUE)
-numbers_at_length_new <- numbers_at_length_new %>% arrange(state, l_in_bin)
-
-
-numbers_at_length_new$reg[numbers_at_length_new$state=="MA"]<-"NO"
-numbers_at_length_new$reg[numbers_at_length_new$state=="RI"]<-"NO"
-numbers_at_length_new$reg[numbers_at_length_new$state=="CT"]<-"NO"
-numbers_at_length_new$reg[numbers_at_length_new$state=="NY"]<-"NO"
-numbers_at_length_new$reg[numbers_at_length_new$state=="NJ"]<-"NJ"
-numbers_at_length_new$reg[numbers_at_length_new$state=="DE"]<-"SO"
-numbers_at_length_new$reg[numbers_at_length_new$state=="MD"]<-"SO"
-numbers_at_length_new$reg[numbers_at_length_new$state=="VA"]<-"SO"
-numbers_at_length_new$reg[numbers_at_length_new$state=="NC"]<-"SO"
-
-#create sum of C_l_new
-numbers_at_length_new$sum_C_l=sum(numbers_at_length_new$C_l_new)
-
-numbers_at_length_new <- numbers_at_length_new %>%
-  mutate(sum_C_l_region_adj = sum_C_l*prediction)
-
-
-numbers_at_length_new <- numbers_at_length_new %>%
-  group_by(state) %>% 
-  mutate(sum_C_l_state = sum(C_l_new))
-
-numbers_at_length_new <- numbers_at_length_new %>%
-  mutate(prop_C_l = C_l_new/sum_C_l_state)
-
-
-numbers_at_length_new <- numbers_at_length_new %>%
-  mutate(C_l_new_prop_adj = sum_C_l_state*prop_C_l)
-
-
-sum(numbers_at_length_new$C_l_new_prop_adj)
-sum(numbers_at_length_new$C_l_new)
-
-
-numbers_at_length_new <- numbers_at_length_new %>%
-  group_by(state) %>% 
-  mutate(sum_C_l_new = sum(C_l_new_prop_adj))
-
-
-numbers_at_length_new <- numbers_at_length_new %>%
-  mutate(sum_C_l = sum(C_l_new))
-
-
-
-
-
-
-
-
-
-numbers_at_length_new <- numbers_at_length_new %>%
-  mutate(sum_C_l_region_new = sum_C_l_region*prediction)
-
-
-
-
-
-
-
-
-
-numbers_at_length_new$C_l_new_adj <-  (numbers_at_length_new$q)*(numbers_at_length_new$N_l_new_prop)*(numbers_at_length_new$E)
-
-
-
-
-
-numbers_at_length_new$C_l_new_adj <-  (numbers_at_length_new$q)*(numbers_at_length_new$N_l_new_prop)*(numbers_at_length_new$E)
-
-sum(numbers_at_length_new$C_l_new_adj)
-sum(numbers_at_length_new$C_l_new)
-sum(numbers_at_length_new$C_l)
-
-
-
-
-
-
-numbers_at_length_new$sum_N_l  <- with(numbers_at_length_new, ave(N_l, FUN = sum))
-numbers_at_length_new$sum_N_l <- numbers_at_length_new$prediction * numbers_at_length_new$sum_N_l
-
-
-numbers_at_length_new$sum_N_l_state <- ave(numbers_at_length_new$N_l, numbers_at_length_new[,c("state")], FUN=sum)
-
-numbers_at_length_new$state_prop <- numbers_at_length_new$sum_N_l_state/numbers_at_length_new$sum_N_l  
-
-
-
-numbers_at_length_new$N_l_new = sum_baseline*numbers_at_length_new$prediction
-sum(numbers_at_length_new$N_l_new)
-sum(numbers_at_length_new$N_l)
-
-numbers_at_length_new$C_l_new_adj =  (numbers_at_length_new$q)*(numbers_at_length_new$N_l_new)*(numbers_at_length_new$E)
-sum(numbers_at_length_new$C_l_new_adj)
-
-
-
-
-numbers_at_length_new$C_l_new_adj = (numbers_at_length_new$C_l_new)*(numbers_at_length_new$norm_pred)
-sum(numbers_at_length_new$C_l_new_adj)
-
-
-
-#Generate a new numbers-at-length variable that is adjusted based on predicted availability
-#numbers_at_length_new$N_l_adj = (numbers_at_length_new$N_l)*(numbers_at_length_new$stand_pred)
-
-#calculate a correction factor that corrects for rounding error. The sum of biomass-availability-adjusted numbers-at-length 
-#should equal the sum of unadjusted numbers-at-length
-
-#correction_factor<-sum(numbers_at_length_new$N_l)/sum(numbers_at_length_new$N_l_adj)
-#numbers_at_length_new$N_l_adj<-numbers_at_length_new$N_l_adj*correction_factor
-#write_xlsx(numbers_at_length_new,"numbers_at_length_new.xlsx")
-
-
-
-
-# sum(numbers_at_length_new$N_l)
-# sum(numbers_at_length_new$N_l_adj)
-# write_xlsx(numbers_at_length_new,"numbers_at_length_new.xlsx")
-
-# 
-# 
-# #Generate a new catch-at-length variable that is adjusted based on predicted availability
-# numbers_at_length_new$C_l_new_adj <- (numbers_at_length_new$q)*(numbers_at_length_new$N_l_adj)*(numbers_at_length_new$E)
-# 
-# 
-# sum(numbers_at_length_new$C_l_new)
-# sum(numbers_at_length_new$C_l_new_adj)
-# 
-# numbers_at_length_new$C_l_new_adj <- numbers_at_length_new$C_l_new_adj*correction_factor
-# 
-# sum(numbers_at_length_new$C_l_new)
-# sum(numbers_at_length_new$C_l_new_adj)
-# 
-# write_xlsx(numbers_at_length_new,"numbers_at_length_new.xlsx")
 
 
 ###########
@@ -303,23 +169,7 @@ catch_expansion_factor_MD=round(tot_cat_MD_predicted/tot_cat_MD_base, digits=4)
 catch_expansion_factor_VA=round(tot_cat_VA_predicted/tot_cat_VA_base, digits=4)
 catch_expansion_factor_NC=round(tot_cat_NC_predicted/tot_cat_NC_base, digits=4)
 
-sum(numbers_at_length_new$C_l)
-sum(numbers_at_length_new$C_l_new)
 
-sum(numbers_at_length$N_l)
-
-
-#Create a factor that expands total catch by state based on biomass availability
-biomass_distn = data.frame(read_excel("projected_biomass_by_region.xlsx"))
-biomass_distn = subset(biomass_distn, year==2020)
-
-numbers_at_length_new =  merge(numbers_at_length_new,biomass_distn,by="state")
-numbers_at_length_new$C_l_new_adj =  numbers_at_length_new$C_l_new * numbers_at_length_new$pred_pct_biomass_stand
-
-sum(numbers_at_length_new$C_l)
-sum(numbers_at_length_new$C_l_new)
-sum(numbers_at_length_new$C_l_new_adj)
-write_xlsx(numbers_at_length_new,"numbers_at_length_new.xlsx")
 
 
 ##########
@@ -329,10 +179,10 @@ source("predicted catch per trip by state.R")
 
 
 #####
-
+library(dplyr)
 #####
 numbers_at_length_MA <- numbers_at_length_MA %>% 
-  rename(fitted_length = l_in_bin,
+  dplyr:: rename(fitted_length = l_in_bin,
          nfish = C_l_new) %>% 
   mutate(fitted_prob = nfish/sum(.$nfish),
          region = rep("MA",nrow(.)),
@@ -341,7 +191,7 @@ numbers_at_length_MA <- numbers_at_length_MA %>%
 
 
 numbers_at_length_RI <- numbers_at_length_RI %>% 
-  rename(fitted_length = l_in_bin,
+  dplyr:: rename(fitted_length = l_in_bin,
          nfish = C_l_new) %>% 
   mutate(fitted_prob = nfish/sum(.$nfish),
          region = rep("RI",nrow(.)),
@@ -349,7 +199,7 @@ numbers_at_length_RI <- numbers_at_length_RI %>%
   I()
 
 numbers_at_length_CT <- numbers_at_length_CT %>% 
-  rename(fitted_length = l_in_bin,
+  dplyr:: rename(fitted_length = l_in_bin,
          nfish = C_l_new) %>% 
   mutate(fitted_prob = nfish/sum(.$nfish),
          region = rep("CT",nrow(.)),
@@ -357,7 +207,7 @@ numbers_at_length_CT <- numbers_at_length_CT %>%
   I()
 
 numbers_at_length_NY <- numbers_at_length_NY %>% 
-  rename(fitted_length = l_in_bin,
+  dplyr::rename(fitted_length = l_in_bin,
          nfish = C_l_new) %>% 
   mutate(fitted_prob = nfish/sum(.$nfish),
          region = rep("NY",nrow(.)),
@@ -365,7 +215,7 @@ numbers_at_length_NY <- numbers_at_length_NY %>%
   I()
 
 numbers_at_length_NJ <- numbers_at_length_NJ %>% 
-  rename(fitted_length = l_in_bin,
+  dplyr::rename(fitted_length = l_in_bin,
          nfish = C_l_new) %>% 
   mutate(fitted_prob = nfish/sum(.$nfish),
          region = rep("NJ",nrow(.)),
@@ -373,7 +223,7 @@ numbers_at_length_NJ <- numbers_at_length_NJ %>%
   I()
 
 numbers_at_length_DE <- numbers_at_length_DE %>% 
-  rename(fitted_length = l_in_bin,
+  dplyr:: rename(fitted_length = l_in_bin,
          nfish = C_l_new) %>% 
   mutate(fitted_prob = nfish/sum(.$nfish),
          region = rep("DE",nrow(.)),
@@ -381,7 +231,7 @@ numbers_at_length_DE <- numbers_at_length_DE %>%
   I()
 
 numbers_at_length_MD <- numbers_at_length_MD %>% 
-  rename(fitted_length = l_in_bin,
+  dplyr::rename(fitted_length = l_in_bin,
          nfish = C_l_new) %>% 
   mutate(fitted_prob = nfish/sum(.$nfish),
          region = rep("MD",nrow(.)),
@@ -389,7 +239,7 @@ numbers_at_length_MD <- numbers_at_length_MD %>%
   I()
 
 numbers_at_length_VA <- numbers_at_length_VA %>% 
-  rename(fitted_length = l_in_bin,
+  dplyr::rename(fitted_length = l_in_bin,
          nfish = C_l_new) %>% 
   mutate(fitted_prob = nfish/sum(.$nfish),
          region = rep("VA",nrow(.)),
@@ -398,7 +248,7 @@ numbers_at_length_VA <- numbers_at_length_VA %>%
 
 
 numbers_at_length_NC <- numbers_at_length_NC %>% 
-  rename(fitted_length = l_in_bin,
+  dplyr::rename(fitted_length = l_in_bin,
          nfish = C_l_new) %>% 
   mutate(fitted_prob = nfish/sum(.$nfish),
          region = rep("NC",nrow(.)),
